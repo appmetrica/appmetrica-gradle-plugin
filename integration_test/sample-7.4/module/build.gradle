@@ -1,0 +1,35 @@
+plugins {
+    id "com.android.library"
+    id "org.jetbrains.kotlin.android"
+}
+
+android {
+    namespace "io.appmetrica.analytics.gradle.plugin.sample.module"
+    buildToolsVersion versionBuildTools
+    compileSdkVersion versionSdkTarget
+
+    defaultConfig {
+        minSdk 24
+        targetSdkVersion versionSdkTarget
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        snapshot {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}

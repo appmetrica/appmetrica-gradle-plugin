@@ -1,0 +1,13 @@
+# doc https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml
+
+[versions]
+selfGradlePlugins = "2.0.0-beta+94"
+
+[plugins]
+appMetricaCodequality = { id = "io.appmetrica.gradle.codequality", version.ref = "selfGradlePlugins" }
+appMetricaGradlePlugin = { id = "io.appmetrica.gradle.gradle-plugin", version.ref = "selfGradlePlugins" }
+appMetricaKotlinLibrary = { id = "io.appmetrica.gradle.kotlin-library", version.ref = "selfGradlePlugins" }
+
+[libraries]
+appMetricaCommon = { module = "io.appmetrica.gradle:common", version.ref = "selfGradlePlugins" }
+appMetricaRepositories = { module = "io.appmetrica.gradle:repositories", version.ref = "selfGradlePlugins" }

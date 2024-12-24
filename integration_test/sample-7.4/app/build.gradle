@@ -1,0 +1,64 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "io.appmetrica.analytics"
+}
+
+android {
+    namespace "io.appmetrica.analytics.gradle.plugin.sample"
+    buildToolsVersion versionBuildTools
+    compileSdkVersion versionSdkTarget
+
+    defaultConfig {
+        applicationId "io.appmetrica.analytics.gradle.plugin.sample"
+        minSdk 24
+        targetSdkVersion versionSdkTarget
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        snapshot {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    ndkVersion "21.1.6352462"
+    externalNativeBuild {
+        cmake {
+            path file("src/main/cpp/CMakeLists.txt")
+            version "3.10.2"
+        }
+    }
+}
+
+android.applicationVariants.configureEach { variant ->
+    def uploadSymbolsTask = project.tasks.named("upload${variant.name.capitalize()}AppMetricaNdkSymbols")
+    if (uploadSymbolsTask != null) {
+        variant.assembleProvider.configure { it.finalizedBy(uploadSymbolsTask) }
+    }
+}
+
+appmetrica {
+    enable = { true }
+    offline = { true }
+    ndk {
+        enable = { true }
+    }
+}
+
+dependencies {
+    implementation(project(":module"))
+    implementation("io.appmetrica.analytics:analytics:6.0.0")
+}
