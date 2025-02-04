@@ -1,4 +1,5 @@
 {
+  ".":"mobile/metrika/android/appmetrica-gradle-plugin",
   ".gitignore":"mobile/metrika/android/appmetrica-gradle-plugin/.gitignore",
   "CONTRIBUTING.md":"mobile/metrika/android/appmetrica-gradle-plugin/CONTRIBUTING.md",
   "LICENSE":"mobile/metrika/android/appmetrica-gradle-plugin/LICENSE",
