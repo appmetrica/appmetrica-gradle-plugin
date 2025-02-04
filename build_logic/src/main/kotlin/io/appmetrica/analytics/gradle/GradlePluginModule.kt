@@ -49,7 +49,7 @@ class GradlePluginModule : Plugin<Project> {
             implementation("com.google.code.gson:gson:2.8.5")
 
             testImplementation("junit:junit:4.12")
-            testImplementation("org.assertj:assertj-core:3.11.1")
+            testImplementation("org.assertj:assertj-core:3.26.3")
             testImplementation("com.nhaarman:mockito-kotlin:0.9.0")
             testImplementation("org.mockito:mockito-core:2.2.9")
 
