@@ -1,7 +1,5 @@
 package io.appmetrica.analytics.gradle.publishing
 
-import io.appmetrica.gradle.repositories.SonatypeRepo
-import io.appmetrica.gradle.repositories.sonatypeRepository
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -37,12 +35,6 @@ class PublishingPlugin : Plugin<Project> {
         project.configureSigning()
 
         project.registerPublishingTasks()
-
-        project.configure<PublishingExtension> {
-            repositories {
-                sonatypeRepository(repoType = SonatypeRepo.CENTRAL_STAGING)
-            }
-        }
     }
 
     private fun Project.configurePom() {

@@ -10,6 +10,7 @@ group = "io.appmetrica.analytics.gradle"
 gradlePlugin {
     plugin("appmetrica-gradle-plugin-module", "io.appmetrica.analytics.gradle.GradlePluginModule")
     plugin("appmetrica-gradle-plugin-publish", "io.appmetrica.analytics.gradle.publishing.PublishingPlugin")
+    plugin("appmetrica-gradle-plugin-public-publish", "io.appmetrica.analytics.gradle.publishing.PublicPublishPlugin")
 }
 
 dependencies {
@@ -19,5 +20,5 @@ dependencies {
     implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.3")
     // by source
     implementation(libs.appMetricaCommon)
-    implementation(libs.appMetricaRepositories)
+    implementation(libs.appMetricaMavenCentralPublish)
 }

@@ -26,6 +26,7 @@
   "build_logic/settings.gradle.kts":"mobile/metrika/android/appmetrica-gradle-plugin/build_logic/settings.gradle.kts",
   "build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/Constants.kt":"mobile/metrika/android/appmetrica-gradle-plugin/build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/Constants.kt",
   "build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/GradlePluginModule.kt":"mobile/metrika/android/appmetrica-gradle-plugin/build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/GradlePluginModule.kt",
+  "build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/publishing/PublicPublishPlugin.kt":"mobile/metrika/android/appmetrica-gradle-plugin/build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/publishing/PublicPublishPlugin.kt",
   "build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/publishing/PublishingPlugin.kt":"mobile/metrika/android/appmetrica-gradle-plugin/build_logic/src/main/kotlin/io/appmetrica/analytics/gradle/publishing/PublishingPlugin.kt",
   "common/build.gradle.kts":"mobile/metrika/android/appmetrica-gradle-plugin/common/build.gradle.kts",
   "common/src/main/kotlin/io/appmetrica/analytics/gradle/common/AGPVersion.kt":"mobile/metrika/android/appmetrica-gradle-plugin/common/src/main/kotlin/io/appmetrica/analytics/gradle/common/AGPVersion.kt",

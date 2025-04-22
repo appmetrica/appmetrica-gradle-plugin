@@ -10,4 +10,4 @@ appMetricaKotlinLibrary = { id = "io.appmetrica.gradle.kotlin-library", version.
 
 [libraries]
 appMetricaCommon = { module = "io.appmetrica.gradle:common", version.ref = "selfGradlePlugins" }
-appMetricaRepositories = { module = "io.appmetrica.gradle:repositories", version.ref = "selfGradlePlugins" }
+appMetricaMavenCentralPublish = { module = "io.appmetrica.gradle:maven-central-publish", version.ref = "selfGradlePlugins" }

@@ -2,6 +2,7 @@ plugins {
     `java-gradle-plugin`
     id("io.appmetrica.analytics.gradle.appmetrica-gradle-plugin-module")
     id("io.appmetrica.analytics.gradle.appmetrica-gradle-plugin-publish")
+    id("io.appmetrica.analytics.gradle.appmetrica-gradle-plugin-public-publish")
 }
 
 description = "Plugin for uploading mappings and symbols during an application build process."
