@@ -122,8 +122,10 @@ class PluginConfigurator {
         }
         val resCreationTask = getOrCreateResourceTask(project, variant, config)
         val mappingFileProvider = if (config.mappingFile() == null) {
+            Log.info("Getting mapping file for variant ${variant.name} from variant")
             variant.mappingFile
         } else {
+            Log.info("Getting mapping file for variant ${variant.name} from config")
             project.provider {
                 config.mappingFile() ?: throw IllegalStateException(
                     "Minify is not enabled for variant ${variant.name}."
@@ -136,6 +138,10 @@ class PluginConfigurator {
             task.from(mappingFileProvider)
             task.archiveFileName.set("mapping.zip")
             task.destinationDirectory.set(project.appMetricaBuildDir(variant).map { it.dir("result") })
+
+            task.eachFile {
+                Log.info("Zipping file ${it.file.canonicalPath}")
+            }
         }
     }
 
@@ -179,6 +185,10 @@ class PluginConfigurator {
             task.from(generateSymbolsTask.flatMap { it.symbolsDir })
             task.archiveFileName.set("symbols.zip")
             task.destinationDirectory.set(project.appMetricaBuildDir(variant).map { it.dir("result") })
+
+            task.eachFile {
+                Log.info("Zipping ndk file ${it.file.canonicalPath}")
+            }
         }
     }
 

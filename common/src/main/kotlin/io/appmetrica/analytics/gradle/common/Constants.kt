@@ -1,5 +1,7 @@
 package io.appmetrica.analytics.gradle.common
 
+const val PLUGIN_VERSION = "1.2.0"
+
 const val APPMETRICA_PLUGIN = "appmetrica"
 const val APPMETRICA_NDK_PLUGIN = "io.appmetrica.analytics:analytics-ndk-crashes:3.0.0"
 const val MAPPING_UPLOAD_URL = "https://api.appmetrica.yandex.ru/management/v1/application/crash/proguard/upload"

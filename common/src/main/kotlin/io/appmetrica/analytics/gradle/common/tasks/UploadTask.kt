@@ -12,6 +12,8 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.UntrackedTask
+import kotlin.io.path.Path
+import kotlin.io.path.fileSize
 import kotlin.math.abs
 
 @UntrackedTask(because = "Make task cache is in progress")
@@ -46,6 +48,10 @@ abstract class UploadTask : DefaultTask() {
     @Suppress("TooGenericExceptionThrown")
     @TaskAction
     fun upload() {
+        Log.info(
+            "Uploading file ${zipFile.get().asFile.name} with size " +
+                "${Path(zipFile.get().asFile.absolutePath).fileSize()}"
+        )
         analytics.reportEvent(
             "upload",
             params = paramsForAnalytics

@@ -8,6 +8,7 @@ import io.appmetrica.analytics.gradle.common.LEGACY_BUILD_ID_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_IS_OFFLINE_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_NDK_ENABLE_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_RES_VALUE_PREFIX
+import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.MappingType
 import io.appmetrica.analytics.gradle.common.NDK_ENABLE_KEY
 import io.appmetrica.analytics.gradle.common.RES_VALUE_PREFIX
@@ -53,6 +54,10 @@ abstract class ResourcesGeneratorTask : DefaultTask() {
     @TaskAction
     fun taskAction() {
         val buildId = UUID.randomUUID().toString()
+        Log.info(
+            "Generating resources for versionName = `$versionName` and versionCode = `$versionCode` " +
+                "with build id : $buildId"
+        )
 
         createKeepResFile()
         createBuildIdResFile(buildId)

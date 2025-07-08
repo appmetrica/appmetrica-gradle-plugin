@@ -10,7 +10,6 @@ object AGPVersion {
                 (it.group == "com.android.application" && it.name == "com.android.application.gradle.plugin")
         } ?: throw IllegalStateException("Failed to find AGP dependency.")
 
-        Log.debug("Found AGP version : ${depAGP.version}")
         return VersionNumber.parse(depAGP.version ?: "")
     }
 }
