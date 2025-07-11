@@ -1,6 +1,6 @@
 package io.appmetrica.analytics.gradle.common.ndk.io
 
-import java.io.EOFException
+import io.appmetrica.analytics.gradle.common.Log
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile
@@ -46,8 +46,9 @@ class RandomAccessFileInputStream(file: File) : SeekableInputStream() {
         var totalBytes = 0
         do {
             val bytesRead = read(buffer, offset + totalBytes, length - totalBytes)
-            if (bytesRead < 0) {
-                throw EOFException()
+            if (bytesRead <= 0) {
+                Log.debug("offset = $offset, totalBytes = $totalBytes, length = $length, bytesRead = $bytesRead")
+                break
             }
             totalBytes += bytesRead
         } while (totalBytes < length)
@@ -84,6 +85,7 @@ class RandomAccessFileInputStream(file: File) : SeekableInputStream() {
         do {
             val bytesRead = readOnce(bytes, off + totalBytes, len - totalBytes)
             if (bytesRead <= 0) {
+                Log.debug("totalBytes = $totalBytes, bytesRead = $bytesRead")
                 if (totalBytes == 0) {
                     totalBytes = bytesRead
                 }
@@ -130,11 +132,13 @@ class RandomAccessFileInputStream(file: File) : SeekableInputStream() {
         var remaining = bufferCount - bufferPos
         if (remaining <= 0) {
             if (len >= buffer.size) {
+                Log.debug("len = $len, buffer.size = ${buffer.size}, remaining = $remaining")
                 return readFromFile(bytes, offset, len)
             }
             fillBuffer()
             remaining = bufferCount - bufferPos
             if (remaining <= 0) {
+                Log.debug("remaining = $remaining")
                 return -1
             }
         }
@@ -158,7 +162,7 @@ class RandomAccessFileInputStream(file: File) : SeekableInputStream() {
     private fun readFromFile(bytes: ByteArray?, offset: Int, len: Int): Int {
         val bytesRead = file!!.read(bytes, offset, len)
         filePointer = file!!.filePointer
-        return bytesRead
+        return if (bytesRead < 0) 0 else bytesRead
     }
 
     @Throws(IOException::class)
