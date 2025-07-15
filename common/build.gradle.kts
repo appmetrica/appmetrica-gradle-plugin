@@ -8,4 +8,5 @@ dependencies {
     } else {
         embed(project(":rtm-dummy"))
     }
+    compileOnly("com.android.tools:common:27.2.0")
 }
