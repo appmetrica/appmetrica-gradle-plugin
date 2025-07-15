@@ -10,6 +10,7 @@ description = "Plugin for uploading mappings and symbols during an application b
 gradlePlugin {
     website = "https://github.com/appmetrica/appmetrica-gradle-plugin"
     vcsUrl = "https://github.com/appmetrica/appmetrica-gradle-plugin.git"
+
     plugins {
         create("appMetricaGradlePlugin") {
             id = "io.appmetrica.analytics"
