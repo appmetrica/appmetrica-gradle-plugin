@@ -3,7 +3,7 @@ package io.appmetrica.analytics.gradle.common
 const val PLUGIN_VERSION = "1.3.0"
 
 const val APPMETRICA_PLUGIN = "appmetrica"
-const val APPMETRICA_NDK_PLUGIN = "io.appmetrica.analytics:analytics-ndk-crashes:3.0.0"
+const val APPMETRICA_NDK_PLUGIN = "io.appmetrica.analytics:analytics-ndk-crashes:3.1.0"
 const val MAPPING_UPLOAD_URL = "https://api.appmetrica.yandex.ru/management/v1/application/crash/proguard/upload"
 const val SYMBOLS_UPLOAD_URL = "https://api.appmetrica.yandex.ru/management/v1/application/crash/android_native/upload"
 const val UPLOAD_FAILED_TEMPLATE = "Archive was not uploaded since '%s'. You can manually upload file %s to AppMetrica"
