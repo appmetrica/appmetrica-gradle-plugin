@@ -46,10 +46,7 @@ def gradle_wrapper(cwd, args={}):
 
 
 def gradle_wrapper_bin():
-    if os.getenv("TEAMCITY_VERSION"):
-        return "{}/mobile/metrika/gradle/run".format(os.getenv("ARCADIA_ROOT"))
-    else:
-        return "./gradlew"
+    return "./gradlew"
 
 
 def show_gradle_version(cwd):
