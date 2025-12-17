@@ -1,6 +1,6 @@
 package io.appmetrica.analytics.gradle.common
 
-const val PLUGIN_VERSION = "1.4.0"
+const val PLUGIN_VERSION = "2.0.0"
 
 const val APPMETRICA_PLUGIN = "appmetrica"
 const val APPMETRICA_NDK_PLUGIN = "io.appmetrica.analytics:analytics-ndk-crashes:3.1.0"
@@ -15,7 +15,7 @@ const val USING_TWO_APPMETRICAS_MESSAGE =
     "Using both $APPMETRICA_ARTIFACT and $APPMETRICA_LEGACY_ARTIFACT is not recommended"
 
 const val RTM_PROJECT_NAME = "appmetrica-build-plugin"
-const val RTM_VERSION = "1.4.0"
+const val RTM_VERSION = "2.0.0"
 
 const val LEGACY_RES_VALUE_PREFIX = "com.yandex.android.appmetrica"
 const val RES_VALUE_PREFIX = "io.appmetrica.analytics"

@@ -23,7 +23,6 @@ gradlePlugin {
 }
 
 dependencies {
-    embed(project(":agp4"))
     embed(project(":agp7"))
     embed(project(":agp8"))
     embed(project(":common"))

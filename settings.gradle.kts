@@ -10,7 +10,6 @@ rootProject.name = "appmetrica-gradle-plugin"
 includeBuild("build_logic")
 
 // modules
-include("agp4")
 include("agp7")
 include("agp8")
 include("common")
