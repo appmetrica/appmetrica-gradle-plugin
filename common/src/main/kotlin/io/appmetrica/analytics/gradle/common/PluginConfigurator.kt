@@ -66,7 +66,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<CheckDependenciesTask> {
-        val taskName = "check${variant.name.capitalize()}AppMetricaDependencies"
+        val taskName = "check${variant.name.uppercaseFirstChar()}AppMetricaDependencies"
         project.tasks.findNamed(taskName, CheckDependenciesTask::class.java)?.let {
             return it
         }
@@ -89,7 +89,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<UploadTask> {
-        val taskName = "upload${variant.name.capitalize()}AppMetricaMapping"
+        val taskName = "upload${variant.name.uppercaseFirstChar()}AppMetricaMapping"
         project.tasks.findNamed(taskName, UploadTask::class.java)?.let {
             return it
         }
@@ -116,7 +116,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<Zip> {
-        val taskName = "zip${variant.name.capitalize()}AppMetricaFiles"
+        val taskName = "zip${variant.name.uppercaseFirstChar()}AppMetricaFiles"
         project.tasks.findNamed(taskName, Zip::class.java)?.let {
             return it
         }
@@ -150,7 +150,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<UploadTask> {
-        val taskName = "upload${variant.name.capitalize()}AppMetricaNdkSymbols"
+        val taskName = "upload${variant.name.uppercaseFirstChar()}AppMetricaNdkSymbols"
         project.tasks.findNamed(taskName, UploadTask::class.java)?.let {
             return it
         }
@@ -173,7 +173,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<Zip> {
-        val taskName = "zip${variant.name.capitalize()}AppMetricaNdkFiles"
+        val taskName = "zip${variant.name.uppercaseFirstChar()}AppMetricaNdkFiles"
         project.tasks.findNamed(taskName, Zip::class.java)?.let {
             return it
         }
@@ -197,7 +197,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<GenerateSymbolsTask> {
-        val taskName = "generate${variant.name.capitalize()}AppMetricaNdkSymbols"
+        val taskName = "generate${variant.name.uppercaseFirstChar()}AppMetricaNdkSymbols"
         project.tasks.findNamed(taskName, GenerateSymbolsTask::class.java)?.let {
             return it
         }
@@ -220,7 +220,7 @@ class PluginConfigurator {
         variant: AndroidApplicationVariant,
         config: AppMetricaPluginConfig
     ): TaskProvider<ResourcesGeneratorTask> {
-        val taskName = "create${variant.name.capitalize()}AppMetricaRes"
+        val taskName = "create${variant.name.uppercaseFirstChar()}AppMetricaRes"
         project.tasks.findNamed(taskName, ResourcesGeneratorTask::class.java)?.let {
             return it
         }

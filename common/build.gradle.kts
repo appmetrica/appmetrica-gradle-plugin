@@ -4,9 +4,9 @@ plugins {
 
 dependencies {
     if (rootProject.file("internal.settings.gradle.kts").exists()) {
-        embed("com.yandex.browser:rtm:2.1.0")
+        embed(libs.rtm)
     } else {
         embed(project(":rtm-dummy"))
     }
-    compileOnly("com.android.tools:common:27.2.0")
+    compileOnly(libs.android.tools.common)
 }

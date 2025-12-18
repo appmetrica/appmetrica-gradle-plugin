@@ -2,6 +2,28 @@
 
 [versions]
 selfGradlePlugins = "2.0.0-beta+101"
+rtm = "2.1.0"
+
+# Core
+kotlin = "1.6.21"
+gson = "2.10.1"
+httpBuilder = "1.0.3"
+
+# Android
+agp7 = "7.2.2"
+agp8 = "8.2.2"
+androidTools = "27.2.0"
+
+# Testing
+junit = "4.13.2"
+assertj = "3.26.3"
+mockito = "5.5.0"
+mockitoKotlin = "5.1.0"
+spek = "2.0.19"
+mockserver = "5.15.0"
+
+# Code quality
+detekt = "1.23.3"
 
 [plugins]
 appMetricaCodequality = { id = "io.appmetrica.gradle.codequality", version.ref = "selfGradlePlugins" }
@@ -11,3 +33,30 @@ appMetricaKotlinLibrary = { id = "io.appmetrica.gradle.kotlin-library", version.
 [libraries]
 appMetricaCommon = { module = "io.appmetrica.gradle:common", version.ref = "selfGradlePlugins" }
 appMetricaMavenCentralPublish = { module = "io.appmetrica.gradle:maven-central-publish", version.ref = "selfGradlePlugins" }
+rtm = { module = "com.yandex.browser:rtm", version.ref = "rtm" }
+
+# Kotlin
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# Core dependencies
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+httpBuilder-apache = { module = "io.github.http-builder-ng:http-builder-ng-apache", version.ref = "httpBuilder" }
+
+# Android
+android-tools-common = { module = "com.android.tools:common", version.ref = "androidTools" }
+agp7 = { module = "com.android.tools.build:gradle", version.ref = "agp7" }
+agp8 = { module = "com.android.tools.build:gradle", version.ref = "agp8" }
+
+# Testing
+junit = { module = "junit:junit", version.ref = "junit" }
+assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+spek-dsl = { module = "org.spekframework.spek2:spek-dsl-jvm", version.ref = "spek" }
+spek-runner = { module = "org.spekframework.spek2:spek-runner-junit5", version.ref = "spek" }
+mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
+
+# Code quality
+detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }

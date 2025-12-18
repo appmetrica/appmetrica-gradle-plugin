@@ -15,9 +15,9 @@ gradlePlugin {
 
 dependencies {
     // https://kotlinlang.org/docs/gradle.html
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
+    implementation(libs.kotlin.gradlePlugin)
     // https://detekt.dev/docs/gettingstarted/gradle/
-    implementation("io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.3")
+    implementation(libs.detekt.gradlePlugin)
     // by source
     implementation(libs.appMetricaCommon)
     implementation(libs.appMetricaMavenCentralPublish)

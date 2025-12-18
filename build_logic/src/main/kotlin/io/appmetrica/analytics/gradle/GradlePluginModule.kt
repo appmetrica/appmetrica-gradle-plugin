@@ -5,6 +5,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
@@ -12,6 +13,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.creating
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.named
@@ -36,6 +38,8 @@ class GradlePluginModule : Plugin<Project> {
         project.configureJavaVersion()
         project.configureKotlinVersion()
 
+        val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+
         project.dependencies {
             val implementation by project.configurations.getting
             val testImplementation by project.configurations.getting
@@ -44,19 +48,19 @@ class GradlePluginModule : Plugin<Project> {
             implementation(localGroovy())
             implementation(gradleApi())
 
-            implementation("io.github.http-builder-ng:http-builder-ng-apache:1.0.3")
-            implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
-            implementation("com.google.code.gson:gson:2.8.5")
+            implementation(libs.findLibrary("httpBuilder-apache").get())
+            implementation(libs.findLibrary("kotlin-stdlib").get())
+            implementation(libs.findLibrary("gson").get())
 
-            testImplementation("junit:junit:4.12")
-            testImplementation("org.assertj:assertj-core:3.26.3")
-            testImplementation("com.nhaarman:mockito-kotlin:0.9.0")
-            testImplementation("org.mockito:mockito-core:2.2.9")
+            testImplementation(libs.findLibrary("junit").get())
+            testImplementation(libs.findLibrary("assertj").get())
+            testImplementation(libs.findLibrary("mockito-kotlin").get())
+            testImplementation(libs.findLibrary("mockito-core").get())
 
-            testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.1")
-            testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.1")
-            testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.6.21")
-            testImplementation("org.mock-server:mockserver-netty:5.11.1")
+            testImplementation(libs.findLibrary("spek-dsl").get())
+            testRuntimeOnly(libs.findLibrary("spek-runner").get())
+            testRuntimeOnly(libs.findLibrary("kotlin-reflect").get())
+            testImplementation(libs.findLibrary("mockserver").get())
         }
     }
 

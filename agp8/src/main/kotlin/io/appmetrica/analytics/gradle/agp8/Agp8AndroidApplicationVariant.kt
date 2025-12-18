@@ -4,6 +4,7 @@ import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.ApplicationVariant
 import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.api.AndroidApplicationVariant
+import io.appmetrica.analytics.gradle.common.uppercaseFirstChar
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.file.DirectoryProperty
@@ -42,8 +43,8 @@ class Agp8AndroidApplicationVariant(
         get() = original.applicationId.get()
 
     override fun subscribeOnAssembleTask(task: TaskProvider<out DefaultTask>) {
-        project.tasks.named("assemble${original.name.capitalize()}").configure { it.finalizedBy(task) }
-        project.tasks.named("bundle${original.name.capitalize()}").configure { it.finalizedBy(task) }
+        project.tasks.named("assemble${original.name.uppercaseFirstChar()}").configure { it.finalizedBy(task) }
+        project.tasks.named("bundle${original.name.uppercaseFirstChar()}").configure { it.finalizedBy(task) }
     }
 
     override fun addGenerateResourceTask(

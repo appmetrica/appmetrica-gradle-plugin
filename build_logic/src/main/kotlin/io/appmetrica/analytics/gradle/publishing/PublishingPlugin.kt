@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.publishing
 
+import io.appmetrica.analytics.gradle.uppercaseFirstChar
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
@@ -102,9 +103,9 @@ class PublishingPlugin : Plugin<Project> {
             repositories.configureEach repository@{
                 if (name == MAVEN_LOCAL_REPOSITORY_NAME) return@repository // skip mavenLocal
 
-                val capitalizedRepoName = name.capitalize()
+                val capitalizedRepoName = name.uppercaseFirstChar()
                 publications.configureEach {
-                    val capitalizedPublicationName = name.capitalize()
+                    val capitalizedPublicationName = name.uppercaseFirstChar()
                     afterEvaluate {
                         tasks.named(
                             "publish${capitalizedPublicationName}PublicationTo${capitalizedRepoName}Repository"
@@ -131,14 +132,14 @@ class PublishingPlugin : Plugin<Project> {
         val repoPrefix = when (repositoryName) {
             MAVEN_LOCAL_REPOSITORY_NAME -> MAVEN_LOCAL_REPOSITORY_NAME
             else -> "${repositoryName}Repository"
-        }.capitalize()
+        }.uppercaseFirstChar()
         tasks.register("publishPluginsTo$repoPrefix") {
             group = "publishing"
             description = "Publish jar with code and all plugins to $repositoryName"
 
             dependsOn(tasks.named("publishPluginMavenPublicationTo$repoPrefix"))
             project.the<GradlePluginDevelopmentExtension>().plugins.configureEach {
-                dependsOn(tasks.named("publish${name.capitalize()}PluginMarkerMavenPublicationTo$repoPrefix"))
+                dependsOn(tasks.named("publish${name.uppercaseFirstChar()}PluginMarkerMavenPublicationTo$repoPrefix"))
             }
         }
     }
