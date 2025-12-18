@@ -1,9 +1,7 @@
 package io.appmetrica.analytics.gradle.agp8.extension
 
 import com.android.build.api.variant.ApplicationVariant
-import groovy.lang.Closure
 import org.gradle.api.Action
-import org.gradle.util.ConfigureUtil
 import java.io.File
 
 open class AppMetricaExtension {
@@ -16,8 +14,6 @@ open class AppMetricaExtension {
     var enableAnalytics: Boolean = true
 
     var ndk = AppMetricaNdkExtension()
-
-    fun ndk(closure: Closure<Any>) = ConfigureUtil.configure(closure, ndk)
 
     fun ndk(action: Action<in AppMetricaNdkExtension>) = action.execute(ndk)
 
