@@ -8,6 +8,8 @@ import io.appmetrica.analytics.gradle.common.analytics.AnalyticsReporter
 import io.appmetrica.analytics.gradle.common.analytics.AnalyticsStub
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.TaskAction
@@ -22,45 +24,40 @@ abstract class UploadTask : DefaultTask() {
     @get:InputFile
     abstract val zipFile: RegularFileProperty
 
-    @Internal
-    lateinit var postApiKey: String
+    @get:Internal
+    abstract val postApiKey: Property<String>
 
-    @Internal
-    lateinit var uploadUrl: String
+    @get:Internal
+    abstract val uploadUrl: Property<String>
 
-    @Internal
-    var offline: Boolean = false
+    @get:Internal
+    abstract val offline: Property<Boolean>
 
-    @Internal
-    var enableAnalytics: Boolean = true
+    @get:Internal
+    abstract val enableAnalytics: Property<Boolean>
 
-    @Internal
-    var paramsForAnalytics: Map<String, Any> = emptyMap()
-
-    private val analytics: Analytics by lazy {
-        if (enableAnalytics) {
-            AnalyticsReporter(getUserId(postApiKey))
-        } else {
-            AnalyticsStub()
-        }
-    }
+    @get:Internal
+    abstract val paramsForAnalytics: MapProperty<String, Any>
 
     @Suppress("TooGenericExceptionThrown")
     @TaskAction
     fun upload() {
+        val analytics = createAnalytics()
+        val params = paramsForAnalytics.get()
+
         Log.info(
             "Uploading file ${zipFile.get().asFile.name} with size " +
                 "${Path(zipFile.get().asFile.absolutePath).fileSize()}"
         )
         analytics.reportEvent(
             "upload",
-            params = paramsForAnalytics
+            params = params
         )
-        if (offline) {
+        if (offline.get()) {
             Log.warn(UPLOAD_FAILED_TEMPLATE.format("Offline mode enabled", zipFile.get().asFile.absolutePath))
         } else {
-            checkParameters()
-            val fileUploader = FileUploader(uploadUrl, postApiKey)
+            checkParameters(analytics, params)
+            val fileUploader = FileUploader(uploadUrl.get(), postApiKey.get())
             try {
                 fileUploader.uploadFile(zipFile.get().asFile)
                 Log.info("File ${zipFile.get().asFile.name} successfully uploaded.")
@@ -69,20 +66,28 @@ abstract class UploadTask : DefaultTask() {
                 analytics.reportError(
                     e.message ?: e::class.java.simpleName,
                     throwable = e,
-                    params = paramsForAnalytics
+                    params = params
                 )
                 throw e
             }
         }
     }
 
-    private fun checkParameters() {
-        if (postApiKey.isEmpty()) {
+    private fun createAnalytics(): Analytics {
+        return if (enableAnalytics.get()) {
+            AnalyticsReporter(getUserId(postApiKey.get()))
+        } else {
+            AnalyticsStub()
+        }
+    }
+
+    private fun checkParameters(analytics: Analytics, params: Map<String, Any>) {
+        if (postApiKey.get().isEmpty()) {
             IllegalArgumentException("Post API key is empty for task $name.").also {
                 analytics.reportError(
                     "Post API key is empty",
                     throwable = it,
-                    params = paramsForAnalytics
+                    params = params
                 )
                 throw it
             }

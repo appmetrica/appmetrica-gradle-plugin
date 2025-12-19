@@ -71,7 +71,6 @@ class PluginConfigurator {
             return it
         }
         return project.tasks.register(taskName, CheckDependenciesTask::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.rootComponent.set(
                 project.configurations
                     .getByName("${variant.name}RuntimeClasspath")
@@ -96,16 +95,15 @@ class PluginConfigurator {
         val zipFilesTask = getOrCreateZipFilesTask(project, variant, config)
         val checkDependenciesTask = getOrCreateCheckDependenciesTask(project, variant, config)
         return project.tasks.register(taskName, UploadTask::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.zipFile.set(zipFilesTask.flatMap { it.archiveFile })
 
-            task.uploadUrl = MAPPING_UPLOAD_URL
-            task.postApiKey = config.postApiKey()
-            task.offline = config.offline()
-            task.enableAnalytics = config.enableAnalytics
-            task.paramsForAnalytics = mapOf(
-                "task_type" to "upload_mapping"
-            ) + getParamsForAnalytics(project, variant, config)
+            task.uploadUrl.set(MAPPING_UPLOAD_URL)
+            task.postApiKey.set(config.postApiKey())
+            task.offline.set(config.offline())
+            task.enableAnalytics.set(config.enableAnalytics)
+            task.paramsForAnalytics.set(
+                mapOf("task_type" to "upload_mapping") + getParamsForAnalytics(project, variant, config)
+            )
 
             task.dependsOn(checkDependenciesTask)
         }
@@ -133,14 +131,15 @@ class PluginConfigurator {
             }
         }
         return project.tasks.register(taskName, Zip::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.from(resCreationTask.flatMap { it.buildInfoFile })
             task.from(mappingFileProvider)
             task.archiveFileName.set("mapping.zip")
             task.destinationDirectory.set(project.appMetricaBuildDir(variant).map { it.dir("result") })
 
-            task.eachFile {
-                Log.info("Zipping file ${it.file.canonicalPath}")
+            task.doFirst {
+                task.source.files.forEach { file ->
+                    Log.info("Zipping file ${file.canonicalPath}")
+                }
             }
         }
     }
@@ -156,15 +155,15 @@ class PluginConfigurator {
         }
         val zipFilesTask = getOrCreateZipNdkFilesTask(project, variant, config)
         return project.tasks.register(taskName, UploadTask::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
-            task.uploadUrl = SYMBOLS_UPLOAD_URL
-            task.postApiKey = config.postApiKey()
-            task.offline = config.offline()
             task.zipFile.set(zipFilesTask.flatMap { it.archiveFile })
-            task.enableAnalytics = config.enableAnalytics
-            task.paramsForAnalytics = mapOf(
-                "task_type" to "upload_ndk"
-            ) + getParamsForAnalytics(project, variant, config)
+
+            task.uploadUrl.set(SYMBOLS_UPLOAD_URL)
+            task.postApiKey.set(config.postApiKey())
+            task.offline.set(config.offline())
+            task.enableAnalytics.set(config.enableAnalytics)
+            task.paramsForAnalytics.set(
+                mapOf("task_type" to "upload_ndk") + getParamsForAnalytics(project, variant, config)
+            )
         }
     }
 
@@ -180,14 +179,15 @@ class PluginConfigurator {
         val resCreationTask = getOrCreateResourceTask(project, variant, config)
         val generateSymbolsTask = getOrCreateGenerateSymbolsTask(project, variant, config)
         return project.tasks.register(taskName, Zip::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.from(resCreationTask.flatMap { it.buildInfoFile })
             task.from(generateSymbolsTask.flatMap { it.symbolsDir })
             task.archiveFileName.set("symbols.zip")
             task.destinationDirectory.set(project.appMetricaBuildDir(variant).map { it.dir("result") })
 
-            task.eachFile {
-                Log.info("Zipping ndk file ${it.file.canonicalPath}")
+            task.doFirst {
+                task.source.files.forEach { file ->
+                    Log.info("Zipping ndk file ${file.canonicalPath}")
+                }
             }
         }
     }
@@ -209,7 +209,6 @@ class PluginConfigurator {
             }
         }
         return project.tasks.register(taskName, GenerateSymbolsTask::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.files.from(soFilesProvider)
             task.symbolsDir.set(project.appMetricaBuildDir(variant).map { it.dir("symbols") })
         }
@@ -225,7 +224,6 @@ class PluginConfigurator {
             return it
         }
         val taskProvider = project.tasks.register(taskName, ResourcesGeneratorTask::class.java) { task ->
-            task.notCompatibleWithConfigurationCache(REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE)
             task.versionName.set(variant.versionName)
             task.versionCode.set(variant.versionCode)
             task.mappingType.set(

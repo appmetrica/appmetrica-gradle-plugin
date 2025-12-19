@@ -28,5 +28,3 @@ const val IS_OFFLINE_KEY = "$RES_VALUE_PREFIX.is_offline"
 
 const val LEGACY_NDK_ENABLE_KEY = "$LEGACY_RES_VALUE_PREFIX.ndk.enable"
 const val NDK_ENABLE_KEY = "$RES_VALUE_PREFIX.ndk.enable"
-
-const val REASON_NOT_COMPATIBLE_WITH_CONFIGURATION_CACHE = "Not supported in current version"
