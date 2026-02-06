@@ -8,6 +8,7 @@ class ElfProgramHeaders(private val list: List<ElfProgramHeader>) {
     fun findHeaders(predicate: (ElfProgramHeader) -> Boolean) = list.filter(predicate)
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun parseElfProgramHeaders(reader: ByteReader, elfFileHeader: ElfFileHeader): ElfProgramHeaders {
     reader.seek(elfFileHeader.programHeaderOffset)
@@ -16,3 +17,4 @@ fun parseElfProgramHeaders(reader: ByteReader, elfFileHeader: ElfFileHeader): El
     }
     return ElfProgramHeaders(programHeaders)
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

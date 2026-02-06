@@ -4,9 +4,9 @@ plugins {
 
 dependencies {
     if (rootProject.file("internal.settings.gradle.kts").exists()) {
-        embed(libs.rtm)
+        embed(appMetricaGradlePluginLibs.rtm)
     } else {
         embed(project(":rtm-dummy"))
     }
-    compileOnly(libs.android.tools.common)
+    compileOnly(appMetricaGradlePluginLibs.android.tools.common)
 }

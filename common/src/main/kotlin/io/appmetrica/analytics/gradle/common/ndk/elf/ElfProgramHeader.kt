@@ -1,3 +1,5 @@
+@file:Suppress("UnusedPrivateProperty")
+
 package io.appmetrica.analytics.gradle.common.ndk.elf
 
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
@@ -24,6 +26,7 @@ private const val PT_HIOS = 0x6fffffff
 private const val PT_LOPROC = 0x70000000
 private const val PT_HIPROC = 0x7fffffff
 
+@Suppress("LongParameterList")
 class ElfProgramHeader(
     val type: Int,
     val flags: Int,
@@ -38,6 +41,7 @@ class ElfProgramHeader(
     fun isNote() = type == PT_NOTE
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readElfProgramHeader(elfClass: ElfClass): ElfProgramHeader = when (elfClass) {
     ElfClass.ELF_CLASS_32 -> {
@@ -63,3 +67,4 @@ fun ByteReader.readElfProgramHeader(elfClass: ElfClass): ElfProgramHeader = when
         ElfProgramHeader(type, flags, offset, virtualAddress, physicalAddress, fileSize, memorySize, align)
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

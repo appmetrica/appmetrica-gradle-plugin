@@ -2,6 +2,7 @@ package io.appmetrica.analytics.gradle.common.ndk.dwarf.line.opcode
 
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.line.DebugLineContext
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 fun processSpecialOpcode(context: DebugLineContext, opcode: Int): Boolean {
     val adjustedOpcode = opcode - context.header.opcodeBase
     val operationAdvance = adjustedOpcode / context.header.lineRange
@@ -15,3 +16,4 @@ fun processSpecialOpcode(context: DebugLineContext, opcode: Int): Boolean {
     context.registers.discriminator = 0
     return true
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

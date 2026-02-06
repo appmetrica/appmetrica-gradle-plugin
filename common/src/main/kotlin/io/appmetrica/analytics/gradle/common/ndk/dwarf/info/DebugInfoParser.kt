@@ -17,6 +17,7 @@ import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.NamedRangesRes
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, DwarfException::class)
 fun parseDebugInfo(
     reader: ByteReader,
@@ -41,6 +42,7 @@ fun parseCompilationUnit(
     val debugAbbrevOffset = fileContext.debugHeaders.debugAbbrev.offset + header.abbrevOffset
     return parseCompilationUnit(reader, fileContext, header, parseAbbrevSection(reader, debugAbbrevOffset))
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class, DwarfException::class)
 private fun parseCompilationUnit(

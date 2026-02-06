@@ -4,6 +4,6 @@ plugins {
 
 dependencies {
     compileOnly(project(":common"))
-    compileOnly(libs.agp8)
-    testImplementation(libs.agp8)
+    compileOnly(appMetricaGradlePluginLibs.agp8)
+    testImplementation(appMetricaGradlePluginLibs.agp8)
 }

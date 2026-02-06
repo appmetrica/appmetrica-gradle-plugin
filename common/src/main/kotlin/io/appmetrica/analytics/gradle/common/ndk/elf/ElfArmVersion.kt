@@ -11,6 +11,7 @@ private const val ARM_FORMAT_VERSION = 'A'.toByte()
 private const val ARM_AEABI_ATTRIBUTES_SUBSECTION = "aeabi"
 private const val ARM_TAG_FILE_ATTRIBUTE = 1.toByte()
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun parseArmVersion(reader: ByteReader, elfFileHeader: ElfFileHeader, sectionHeaders: ElfSectionHeaders) =
     if (elfFileHeader.machine == ElfMachine.EM_ARM) {
@@ -20,7 +21,9 @@ fun parseArmVersion(reader: ByteReader, elfFileHeader: ElfFileHeader, sectionHea
     } else {
         null
     }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
+@Suppress("UseRequire")
 @Throws(IOException::class)
 private fun parseArmVersionFromArmAttributesSection(reader: ByteReader, sectionOffset: Long, size: Long): String? {
     reader.seek(sectionOffset)

@@ -12,6 +12,7 @@ import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 import java.nio.ByteOrder
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, DwarfException::class)
 fun parseDwarf(
     reader: ByteReader,
@@ -52,3 +53,4 @@ fun parseDebugLineData(
         DebugLineData()
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

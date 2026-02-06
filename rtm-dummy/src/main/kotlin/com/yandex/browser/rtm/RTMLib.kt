@@ -3,6 +3,7 @@ package com.yandex.browser.rtm
 import com.yandex.browser.rtm.builder.RTMErrorBuilder
 import com.yandex.browser.rtm.builder.RTMEventBuilder
 
+@Suppress("UnusedParameter")
 class RTMLib {
 
     companion object {

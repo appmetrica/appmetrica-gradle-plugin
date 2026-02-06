@@ -5,6 +5,7 @@ import io.appmetrica.analytics.gradle.common.ndk.dwarf.line.opcode.processOpcode
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, DwarfException::class)
 fun parseDebugLinesFromCurrentOffset(
     reader: ByteReader,
@@ -13,6 +14,7 @@ fun parseDebugLinesFromCurrentOffset(
     val context = reader.readDebugLineContext(offsetSize)
     return DebugLineData(parseCompilationUnit(reader, context), context)
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class, DwarfException::class)
 private fun parseCompilationUnit(reader: ByteReader, context: DebugLineContext): List<DebugLineEntry> {

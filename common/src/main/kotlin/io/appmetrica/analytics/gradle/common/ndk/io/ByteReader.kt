@@ -130,6 +130,7 @@ class ByteReader(private val source: SeekableInputStream) : Closeable {
     @Throws(IOException::class)
     fun readBytesWithBlockSize(numBytes: Int) = readBytes(readInt(numBytes))
 
+    @Suppress("UseRequire")
     @Throws(IOException::class)
     private fun readNumber(buffer: ByteArray, numBytes: Int, width: Int, order: ByteOrder): ByteArray {
         if (numBytes > width) {

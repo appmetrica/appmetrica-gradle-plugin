@@ -47,6 +47,7 @@ class Agp7AndroidApplicationVariant(
         original.registerResGeneratingTask(task.get(), property(task.get()).get().asFile)
     }
 
+    @Suppress("TooGenericExceptionCaught", "SwallowedException")
     override val defaultSoFiles: Provider<Set<File>>
         get() = project.provider {
             try {

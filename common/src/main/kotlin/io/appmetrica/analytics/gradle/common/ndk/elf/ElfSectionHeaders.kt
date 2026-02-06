@@ -3,6 +3,7 @@ package io.appmetrica.analytics.gradle.common.ndk.elf
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 const val ELF_SECTION_DEBUG_INFO = ".debug_info"
 const val ELF_SECTION_DEBUG_ABBREV = ".debug_abbrev"
 const val ELF_SECTION_DEBUG_STR = ".debug_str"
@@ -35,3 +36,4 @@ fun parseElfSectionHeaders(reader: ByteReader, elfFileHeader: ElfFileHeader): El
     sectionHeaders.readNames(reader, namesSection.offset)
     return ElfSectionHeaders(sectionHeaders)
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

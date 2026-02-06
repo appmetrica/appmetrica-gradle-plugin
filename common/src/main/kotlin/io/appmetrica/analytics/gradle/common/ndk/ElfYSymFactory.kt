@@ -20,6 +20,7 @@ private const val HEX = 16
 
 class ElfYSymFactory : YSymFactory {
 
+    @Suppress("UseRequire")
     @Throws(YSymException::class, IOException::class)
     override fun createCSymFromFile(binFile: File): YSym {
         Log.debug("Processing file ${binFile.absolutePath}")

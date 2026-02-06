@@ -14,7 +14,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
     versionCatalogs {
-        create("libs") {
+        create("appMetricaGradlePluginLibs") {
             from(files("libs.versions.toml"))
         }
     }

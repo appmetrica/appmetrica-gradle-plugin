@@ -7,6 +7,7 @@ import java.io.IOException
 private const val DWARF_32_WORD_SIZE = 4
 private const val DWARF_64_WORD_SIZE = 8
 
+@Suppress("LongParameterList")
 class DebugLineHeader(
     val length: Long,
     val version: Int,
@@ -21,6 +22,7 @@ class DebugLineHeader(
     val endOffset: Long
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readDebugLineHeader(): DebugLineHeader {
     val (wordSize, length) = readDebugLineLength()
@@ -62,3 +64,4 @@ fun ByteReader.readDebugLineLength(): Pair<Int, Long> {
     }
     return wordSize to length
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

@@ -29,6 +29,7 @@ class Agp8AndroidApplicationVariant(
     override val splitVersionCodes: Provider<Set<Int>>
         get() = project.provider { original.outputs.mapNotNull { it.versionCode.get() }.toSet() }
 
+    @Suppress("TooGenericExceptionCaught")
     override val mappingFile: Provider<File?>
         get() = try {
             original.artifacts.get(SingleArtifact.OBFUSCATION_MAPPING_FILE).map { it.asFile }

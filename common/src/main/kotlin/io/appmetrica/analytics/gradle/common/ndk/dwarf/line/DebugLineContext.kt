@@ -21,6 +21,7 @@ class DebugLineContext(val header: DebugLineHeader, val registers: DebugLineRegi
     class DebugLineFileInfo(val name: String, val directory: String, val modificationTime: Int, val length: Int)
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readDebugLineContext(offsetSize: Int): DebugLineContext {
     val header = readDebugLineHeader()
@@ -30,6 +31,7 @@ fun ByteReader.readDebugLineContext(offsetSize: Int): DebugLineContext {
     readFiles(context)
     return context
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class)
 private fun ByteReader.readDirectories(context: DebugLineContext) {

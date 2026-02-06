@@ -6,6 +6,8 @@ import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import java.util.Locale
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
+@Suppress("SwallowedException")
 fun <T : Task> TaskContainer.findNamed(name: String, type: Class<T>): TaskProvider<T>? = try {
     this.named(name, type)
 } catch (u: UnknownDomainObjectException) {
@@ -14,3 +16,4 @@ fun <T : Task> TaskContainer.findNamed(name: String, type: Class<T>): TaskProvid
 
 fun String.uppercaseFirstChar(): String =
     replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

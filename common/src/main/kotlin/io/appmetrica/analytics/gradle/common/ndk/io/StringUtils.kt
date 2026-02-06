@@ -7,6 +7,7 @@ import io.appmetrica.analytics.gradle.common.ndk.elf.ElfSymbol
 
 private const val HEX = 16
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 fun ByteArray.toPrettyString() = joinToString(" ") { "%02x".format(it) }
 
 fun ElfFileHeader.toPrettyString() = """
@@ -67,3 +68,4 @@ fun List<ElfSymbol>.print(printer: (String) -> Unit) = Table(
         )
     }
 ).print(printer)
+/* ktlint-enable appmetrica-rules:no-top-level-members */

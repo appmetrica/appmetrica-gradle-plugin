@@ -1,6 +1,6 @@
 package io.appmetrica.analytics.gradle
 
-import io.appmetrica.gradle.common.plugins.CodeQualityPlugin
+import io.appmetrica.gradle.common.plugins.KotlinLibraryPlugin
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,14 +19,12 @@ import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
-import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class GradlePluginModule : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.apply<KotlinPluginWrapper>() // kotlin
-        project.apply<CodeQualityPlugin>() // id("appmetrica-codequality")
+        project.apply<KotlinLibraryPlugin>()
         project.apply<JacocoPlugin>() // jacoco
 
         project.group = Constants.Library.group
@@ -38,7 +36,8 @@ class GradlePluginModule : Plugin<Project> {
         project.configureJavaVersion()
         project.configureKotlinVersion()
 
-        val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+        val appMetricaGradlePluginLibs =
+            project.extensions.getByType<VersionCatalogsExtension>().named("appMetricaGradlePluginLibs")
 
         project.dependencies {
             val implementation by project.configurations.getting
@@ -48,19 +47,19 @@ class GradlePluginModule : Plugin<Project> {
             implementation(localGroovy())
             implementation(gradleApi())
 
-            implementation(libs.findLibrary("httpBuilder-apache").get())
-            implementation(libs.findLibrary("kotlin-stdlib").get())
-            implementation(libs.findLibrary("gson").get())
+            implementation(appMetricaGradlePluginLibs.findLibrary("httpBuilder-apache").get())
+            implementation(appMetricaGradlePluginLibs.findLibrary("kotlin-stdlib").get())
+            implementation(appMetricaGradlePluginLibs.findLibrary("gson").get())
 
-            testImplementation(libs.findLibrary("junit").get())
-            testImplementation(libs.findLibrary("assertj").get())
-            testImplementation(libs.findLibrary("mockito-kotlin").get())
-            testImplementation(libs.findLibrary("mockito-core").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("junit").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("assertj").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("mockito-kotlin").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("mockito-core").get())
 
-            testImplementation(libs.findLibrary("spek-dsl").get())
-            testRuntimeOnly(libs.findLibrary("spek-runner").get())
-            testRuntimeOnly(libs.findLibrary("kotlin-reflect").get())
-            testImplementation(libs.findLibrary("mockserver").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("spek-dsl").get())
+            testRuntimeOnly(appMetricaGradlePluginLibs.findLibrary("spek-runner").get())
+            testRuntimeOnly(appMetricaGradlePluginLibs.findLibrary("kotlin-reflect").get())
+            testImplementation(appMetricaGradlePluginLibs.findLibrary("mockserver").get())
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException
 private const val DWARF_32_WORD_SIZE = 4
 private const val DWARF_64_WORD_SIZE = 8
 
+@Suppress("LongParameterList")
 class CompilationUnitHeader(
     val offset: Long,
     val length: Long,
@@ -16,6 +17,7 @@ class CompilationUnitHeader(
     val endOffset: Long
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readCompilationUnitHeader(debugInfoOffset: Long): CompilationUnitHeader {
     val offset = getCurrentOffset() - debugInfoOffset
@@ -31,6 +33,7 @@ fun ByteReader.readCompilationUnitHeader(debugInfoOffset: Long): CompilationUnit
         endOffset = endOffset
     )
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class)
 private fun ByteReader.readCompilationUnitLength(): Pair<Int, Long> {

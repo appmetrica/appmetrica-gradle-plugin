@@ -21,6 +21,7 @@ class ElfFileIdent(
     val abiVersion: Int
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, ElfException::class)
 fun ByteReader.readElfFileIdent() = readBytes(EI_NIDENT).let { ident ->
     if (magicNumber.contentEquals(ident.copyOf(magicNumber.size)) == false) {
@@ -38,3 +39,4 @@ fun ByteReader.readElfFileIdent() = readBytes(EI_NIDENT).let { ident ->
         abiVersion = ident[EI_ABIVERSION].toInt()
     )
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

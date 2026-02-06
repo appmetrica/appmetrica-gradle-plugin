@@ -4,6 +4,7 @@ import io.appmetrica.analytics.gradle.common.ndk.YSym
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.FileContext
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.NamedRange
 
+@Suppress("LongParameterList")
 class CompilationUnitContext private constructor(
     val name: String,
     val ranges: List<Pair<Long, Long>>,

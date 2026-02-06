@@ -19,6 +19,7 @@ enum class ExtendedOpcode(private val value: Int) {
     }
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun processExtendedOpcode(reader: ByteReader, context: DebugLineContext, opcode: Int): Boolean {
     when (ExtendedOpcode.fromValue(opcode)) {
@@ -43,3 +44,4 @@ fun processExtendedOpcode(reader: ByteReader, context: DebugLineContext, opcode:
     }
     return false
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

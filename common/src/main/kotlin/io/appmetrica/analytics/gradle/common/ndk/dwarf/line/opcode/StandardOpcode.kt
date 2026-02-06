@@ -30,6 +30,7 @@ enum class StandardOpcode(private val value: Int, val isNewRow: Boolean = false)
     }
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @SuppressWarnings("ComplexMethod")
 @Throws(IOException::class)
 fun processStandardOpcode(reader: ByteReader, context: DebugLineContext, opcode: Int): Boolean {
@@ -84,3 +85,4 @@ fun processStandardOpcode(reader: ByteReader, context: DebugLineContext, opcode:
     }
     return standardOpcode.isNewRow
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

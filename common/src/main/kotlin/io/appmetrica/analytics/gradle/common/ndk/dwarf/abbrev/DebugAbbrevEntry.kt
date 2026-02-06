@@ -10,6 +10,7 @@ class DebugAbbrevEntry(
     val attributes: List<DebugAbbrevAttribute>
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readDebugAbbrevEntries(): Map<Int, DebugAbbrevEntry> {
     val entries = mutableMapOf<Int, DebugAbbrevEntry>()
@@ -31,3 +32,4 @@ private fun ByteReader.readDebugAbbrevEntry(): DebugAbbrevEntry? {
         )
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

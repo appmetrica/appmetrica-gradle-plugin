@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 const val PLUGIN_VERSION = "2.0.0"
 
 const val APPMETRICA_PLUGIN = "appmetrica"
@@ -28,3 +29,4 @@ const val IS_OFFLINE_KEY = "$RES_VALUE_PREFIX.is_offline"
 
 const val LEGACY_NDK_ENABLE_KEY = "$LEGACY_RES_VALUE_PREFIX.ndk.enable"
 const val NDK_ENABLE_KEY = "$RES_VALUE_PREFIX.ndk.enable"
+/* ktlint-enable appmetrica-rules:no-top-level-members */

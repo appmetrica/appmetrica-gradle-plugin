@@ -8,6 +8,7 @@ import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
 import java.io.File
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 fun main() {
     Log.setLogger(PrintingLogger())
     listOf("obj").forEach { objDirPath ->
@@ -19,6 +20,7 @@ fun main() {
         }
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 class PrintingLogger : Logger by Logging.getLogger(Project::class.java) {
     override fun debug(value: String?) {

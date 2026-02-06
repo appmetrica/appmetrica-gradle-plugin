@@ -9,6 +9,7 @@ private const val GNU_BUILD_ID_SIZE = 16
 private const val NT_GNU_BUILD_ID = 0x3
 private const val MAX_PAGE_SIZE = 4096L
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun parseElfBuildId(
     reader: ByteReader,
@@ -18,6 +19,7 @@ fun parseElfBuildId(
     parseElfBuildIdNote(reader, sectionHeaders, programHeaders)?.let { return it }
     return hashElfTextSection(reader, sectionHeaders)
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class)
 private fun parseElfBuildIdNote(

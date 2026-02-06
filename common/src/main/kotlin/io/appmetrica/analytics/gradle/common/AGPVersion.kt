@@ -8,6 +8,7 @@ object AGPVersion {
         return getFromVersionString() ?: getFromClasspath(project)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun getFromVersionString(): VersionNumber? {
         return try {
             VersionNumber.parse(com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION)
@@ -17,6 +18,7 @@ object AGPVersion {
         }
     }
 
+    @Suppress("UseCheckOrError")
     private fun getFromClasspath(project: Project): VersionNumber {
         val depAGP = project.rootProject.buildscript.configurations.getByName("classpath").dependencies.find {
             (it.group == "com.android.tools.build" && it.name == "gradle") ||

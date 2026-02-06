@@ -1,3 +1,5 @@
+@file:Suppress("UnusedPrivateProperty")
+
 package io.appmetrica.analytics.gradle.common.ndk.elf
 
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
@@ -55,6 +57,7 @@ data class ElfSymbol(
     }
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun parseElfSymbols(
     reader: ByteReader,
@@ -69,6 +72,7 @@ fun parseElfSymbols(
     }
     return symbols
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class)
 private fun parseElfSymbols(

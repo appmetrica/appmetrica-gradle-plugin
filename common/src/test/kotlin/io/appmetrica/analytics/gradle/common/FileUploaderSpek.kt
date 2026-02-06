@@ -11,6 +11,7 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.File
 
+/* ktlint-disable appmetrica-rules:no-mockito-when */
 object FileUploaderSpek : Spek({
     describe("upload file") {
         val port = 8888
@@ -98,3 +99,4 @@ object FileUploaderSpek : Spek({
         }
     }
 })
+/* ktlint-enable appmetrica-rules:no-mockito-when */

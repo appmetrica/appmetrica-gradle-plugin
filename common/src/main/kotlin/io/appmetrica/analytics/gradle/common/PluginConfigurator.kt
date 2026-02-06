@@ -13,6 +13,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.util.GradleVersion
 
+@Suppress("TooManyFunctions")
 class PluginConfigurator {
 
     fun configure(
@@ -109,6 +110,7 @@ class PluginConfigurator {
         }
     }
 
+    @Suppress("UseCheckOrError")
     private fun getOrCreateZipFilesTask(
         project: Project,
         variant: AndroidApplicationVariant,

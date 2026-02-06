@@ -39,7 +39,7 @@ abstract class UploadTask : DefaultTask() {
     @get:Internal
     abstract val paramsForAnalytics: MapProperty<String, Any>
 
-    @Suppress("TooGenericExceptionThrown")
+    @Suppress("TooGenericExceptionThrown", "TooGenericExceptionCaught")
     @TaskAction
     fun upload() {
         val analytics = createAnalytics()

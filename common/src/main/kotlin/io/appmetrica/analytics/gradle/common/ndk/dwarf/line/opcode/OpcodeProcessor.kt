@@ -7,6 +7,8 @@ import java.io.IOException
 
 private const val EXTENDED_OPCODE = 0
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
+@Suppress("UnusedPrivateProperty")
 @Throws(IOException::class, DwarfException::class)
 fun processOpcode(reader: ByteReader, context: DebugLineContext): Boolean {
     val opcode = reader.readInt(Byte.SIZE_BYTES)
@@ -30,3 +32,4 @@ fun incrementAddressAndOpIndex(context: DebugLineContext, operationAdvance: Int)
     context.registers.opIndex = (context.registers.opIndex + operationAdvance) %
         context.header.maxOperationsPerInstruction
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

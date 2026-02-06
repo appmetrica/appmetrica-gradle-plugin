@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common
 
+@Suppress("ReturnCount", "MagicNumber")
 class VersionNumber private constructor(
     val major: Int,
     val minor: Int,
@@ -52,6 +53,7 @@ class VersionNumber private constructor(
     }
 
     private abstract class AbstractScheme protected constructor(val depth: Int) : Scheme {
+        @Suppress("NestedBlockDepth")
         override fun parse(value: String): VersionNumber {
             if (value.isNotEmpty()) {
                 val scanner = Scanner(value)

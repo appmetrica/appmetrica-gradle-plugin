@@ -8,12 +8,14 @@ class DebugAbbrevAttribute(
     val form: DWForm
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readDebugAbbrevAttributes(): List<DebugAbbrevAttribute> {
     val attributes = mutableListOf<DebugAbbrevAttribute>()
     while (readDebugAbbrevAttribute()?.also { attributes.add(it) } != null);
     return attributes
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class)
 private fun ByteReader.readDebugAbbrevAttribute(): DebugAbbrevAttribute? {

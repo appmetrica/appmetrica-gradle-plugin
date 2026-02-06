@@ -72,6 +72,7 @@ class RandomAccessFileInputStream(file: File) : SeekableInputStream() {
         return read(bytes, 0, bytes.size)
     }
 
+    @Suppress("ThrowingExceptionsWithoutMessageOrCause")
     @Throws(IOException::class)
     override fun read(bytes: ByteArray, off: Int, len: Int): Int {
         if (off !in 0..bytes.size || len < 0 || off + len !in 0..bytes.size) {

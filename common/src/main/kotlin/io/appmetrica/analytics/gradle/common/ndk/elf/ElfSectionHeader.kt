@@ -1,3 +1,5 @@
+@file:Suppress("UnusedPrivateProperty")
+
 package io.appmetrica.analytics.gradle.common.ndk.elf
 
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
@@ -17,6 +19,7 @@ private const val SHT_SHLIB = 0xa
 private const val SHT_DYNSYM = 0xb
 private const val SHT_ARM_ATTRIBUTES = 0x70000003
 
+@Suppress("LongParameterList")
 class ElfSectionHeader(
     val name: Int,
     val type: Int,
@@ -41,6 +44,7 @@ class ElfSectionHeader(
     fun isArmAttributes() = type == SHT_ARM_ATTRIBUTES
 }
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun ByteReader.readElfSectionHeader(elfClass: ElfClass) = ElfSectionHeader(
     name = readInt(),
@@ -62,3 +66,4 @@ fun List<ElfSectionHeader>.readNames(reader: ByteReader, namesSectionOffset: Lon
         sectionHeader.nameString = reader.readNullTerminatedString(Charsets.UTF_8)
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */

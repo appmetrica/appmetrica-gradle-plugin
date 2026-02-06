@@ -1,7 +1,7 @@
 # doc https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml
 
 [versions]
-selfGradlePlugins = "2.0.0-beta+102"
+selfGradlePlugins = "2.0.0-beta+108"
 rtm = "2.1.0"
 
 # Core
@@ -22,23 +22,19 @@ mockitoKotlin = "5.1.0"
 spek = "2.0.19"
 mockserver = "5.15.0"
 
-# Code quality
-detekt = "1.23.3"
-
 [plugins]
 appMetricaCodequality = { id = "io.appmetrica.gradle.codequality", version.ref = "selfGradlePlugins" }
 appMetricaGradlePlugin = { id = "io.appmetrica.gradle.gradle-plugin", version.ref = "selfGradlePlugins" }
 appMetricaKotlinLibrary = { id = "io.appmetrica.gradle.kotlin-library", version.ref = "selfGradlePlugins" }
 
 [libraries]
-appMetricaCommon = { module = "io.appmetrica.gradle:common", version.ref = "selfGradlePlugins" }
+appMetricaKotlinLibrary = { module = "io.appmetrica.gradle:kotlin-library", version.ref = "selfGradlePlugins" }
 appMetricaMavenCentralPublish = { module = "io.appmetrica.gradle:maven-central-publish", version.ref = "selfGradlePlugins" }
 rtm = { module = "com.yandex.browser:rtm", version.ref = "rtm" }
 
 # Kotlin
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # Core dependencies
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -57,6 +53,3 @@ mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "
 spek-dsl = { module = "org.spekframework.spek2:spek-dsl-jvm", version.ref = "spek" }
 spek-runner = { module = "org.spekframework.spek2:spek-runner-junit5", version.ref = "spek" }
 mockserver = { module = "org.mock-server:mockserver-netty", version.ref = "mockserver" }
-
-# Code quality
-detekt-gradlePlugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }

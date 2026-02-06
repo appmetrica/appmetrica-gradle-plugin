@@ -8,12 +8,14 @@ import io.appmetrica.analytics.gradle.common.ndk.io.RandomAccessFileInputStream
 import java.io.File
 import java.io.IOException
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, ElfException::class, DwarfException::class)
 fun parseElf(input: File, handler: ElfHandler) {
     ByteReader(RandomAccessFileInputStream(input)).use { reader ->
         parseElf(reader, handler)
     }
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
 
 @Throws(IOException::class, ElfException::class, DwarfException::class)
 private fun parseElf(reader: ByteReader, handler: ElfHandler) {

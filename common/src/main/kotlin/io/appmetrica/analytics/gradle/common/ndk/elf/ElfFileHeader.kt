@@ -3,6 +3,7 @@ package io.appmetrica.analytics.gradle.common.ndk.elf
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 
+@Suppress("LongParameterList")
 class ElfFileHeader(
     val ident: ElfFileIdent,
     val type: Int,
@@ -20,6 +21,7 @@ class ElfFileHeader(
     val sectionHeaderStringIndex: Int
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class, ElfException::class)
 fun ByteReader.readElfFileHeader(elfFileIdent: ElfFileIdent) = ElfFileHeader(
     ident = elfFileIdent,
@@ -37,3 +39,4 @@ fun ByteReader.readElfFileHeader(elfFileIdent: ElfFileIdent) = ElfFileHeader(
     sectionHeaderNum = readInt(Short.SIZE_BYTES),
     sectionHeaderStringIndex = readInt(Short.SIZE_BYTES)
 )
+/* ktlint-enable appmetrica-rules:no-top-level-members */

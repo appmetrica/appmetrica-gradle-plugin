@@ -12,6 +12,7 @@ class ElfNote(
     val desc: ByteArray
 )
 
+/* ktlint-disable appmetrica-rules:no-top-level-members */
 @Throws(IOException::class)
 fun parseElfNotes(reader: ByteReader, noteSection: ElfSectionHeader): List<ElfNote> =
     parseElfNotes(reader, noteSection.offset, noteSection.size)
@@ -44,3 +45,4 @@ fun ByteReader.readElfNote(): ElfNote {
     Log.debug("nameSize = $nameSize, descSize = $descSize, type = $type, name = $name, desc = $desc")
     return ElfNote(nameSize, descSize, type, name, desc)
 }
+/* ktlint-enable appmetrica-rules:no-top-level-members */
