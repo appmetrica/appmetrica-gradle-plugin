@@ -1,8 +1,8 @@
 package io.appmetrica.analytics.gradle.common.tasks
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.ElfYSymFactory
 import io.appmetrica.analytics.gradle.common.ndk.YSymSerializer
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.DirectoryProperty
@@ -27,7 +27,7 @@ abstract class GenerateSymbolsTask : DefaultTask() {
             deleteRecursively()
             mkdirs()
         }
-        files.files.filter {
+        files.asFileTree.filter {
             it.exists() && it.isFile && it.name.endsWith(".so") && !it.name.contains("appmetrica")
         }.forEach { generate(it) }
     }

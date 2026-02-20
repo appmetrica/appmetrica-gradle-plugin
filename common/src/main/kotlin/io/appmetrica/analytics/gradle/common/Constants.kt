@@ -29,4 +29,8 @@ const val IS_OFFLINE_KEY = "$RES_VALUE_PREFIX.is_offline"
 
 const val LEGACY_NDK_ENABLE_KEY = "$LEGACY_RES_VALUE_PREFIX.ndk.enable"
 const val NDK_ENABLE_KEY = "$RES_VALUE_PREFIX.ndk.enable"
+
+const val NO_MAPPING_FILE_MESSAGE = "Failed to get mapping file. " +
+    "Make sure that obfuscation is enabled or disable the loading of mappings in the plugin setting. " +
+    "If this does not help, then refer to the documentation."
 /* ktlint-enable appmetrica-rules:no-top-level-members */

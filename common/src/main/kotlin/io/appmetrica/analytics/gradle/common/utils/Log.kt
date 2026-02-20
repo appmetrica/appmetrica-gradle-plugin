@@ -1,4 +1,4 @@
-package io.appmetrica.analytics.gradle.common
+package io.appmetrica.analytics.gradle.common.utils
 
 import org.gradle.api.logging.Logger
 

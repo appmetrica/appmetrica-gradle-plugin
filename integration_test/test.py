@@ -62,7 +62,7 @@ def show_gradle_version(cwd):
         raise Exception("Cannot show gradle wrapper version")
 
 
-def assemble_and_upload_mappings(cwd, build_type, args={}):
+def assemble_and_upload_mappings(cwd, build_type, args={}, expect_success=True):
     print(f"[test.py] Running assemble{build_type} for the first time", flush=True)
     return_code = subprocess.call(
         " ".join([gradle_wrapper_bin(), f"clean assemble{build_type} -i -s"] + format_args(args)),
@@ -70,8 +70,12 @@ def assemble_and_upload_mappings(cwd, build_type, args={}):
         cwd=cwd
     )
 
-    if return_code != 0:
-        raise Exception(f"Failed to assemble {build_type} apk and upload mappings")
+    if expect_success:
+        if return_code != 0:
+            raise Exception(f"Failed to assemble {build_type} apk and upload mappings")
+    else:
+        if return_code == 0:
+            raise Exception(f"Expected failure to assemble {build_type} apk and upload mappings")
 
     # Run again to verify configuration cache reuse works correctly
     print(f"[test.py] Running assemble{build_type} a second time", flush=True)
@@ -81,8 +85,13 @@ def assemble_and_upload_mappings(cwd, build_type, args={}):
         cwd=cwd
     )
 
-    if return_code != 0:
-        raise Exception(f"Failed to assemble {build_type} with configuration cache reuse")
+    if expect_success:
+        if return_code != 0:
+            raise Exception(f"Failed to assemble {build_type} with configuration cache reuse")
+    else:
+        if return_code == 0:
+            raise Exception(f"Expected failure to assemble {build_type} apk and upload mappings")
+
 
 def publish_plugin_to_maven_local(cwd, args={}):
     print("[test.py] Publishing plugin to maven local", flush=True)
@@ -163,6 +172,42 @@ def check_mapping_files_to_upload(zip_file_name, mapping_file_name):
         raise Exception("Mapping files should be the same")
 
 
+def testRelease(temp_sample_path, version_args, wrapper_version, agp_version):
+    build_type = "firstOneSecondOneRelease"
+    try:
+        assemble_and_upload_mappings(
+            cwd=temp_sample_path,
+            build_type=build_type.capitalize(),
+            args=version_args,
+        )
+        check_mapping_files_to_upload(
+            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
+            mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
+        )
+        check_symbol_files_to_upload(
+            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/symbols.zip",
+        )
+    except Exception as error:
+        errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
+
+
+def testDebug(temp_sample_path, version_args, wrapper_version, agp_version):
+    testcases = {
+        "firstOneSecondOneDebug": False,
+        "firstTwoSecondTwoDebug": True,
+    }
+    for build_type, expect_success in testcases.items():
+        try:
+            assemble_and_upload_mappings(
+                cwd=temp_sample_path,
+                build_type=build_type.capitalize(),
+                args=version_args,
+                expect_success=expect_success,
+            )
+        except Exception as error:
+            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}, expect_success={expect_success}: {str(error)}")
+
+
 def test():
     publish_plugin_to_maven_local(plugin_path)
 
@@ -170,7 +215,6 @@ def test():
     agp_versions = args.agp_version
     sample_path = args.sample_path
     for agp_version in agp_versions:
-        build_type = "release"
         temp_sample_path = tempfile.TemporaryDirectory().name
         shutil.copytree(sample_path, temp_sample_path)
         version_args = {
@@ -180,26 +224,18 @@ def test():
         try:
             gradle_wrapper(temp_sample_path, version_args)
             show_gradle_version(temp_sample_path)
-            assemble_and_upload_mappings(
-                cwd=temp_sample_path,
-                build_type=build_type.capitalize(),
-                args=version_args
-            )
-            check_mapping_files_to_upload(
-                zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
-                mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
-            )
-            check_symbol_files_to_upload(
-                zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/symbols.zip",
-            )
         except Exception as error:
-            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
+            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}: {str(error)}")
+        testRelease(temp_sample_path, version_args, wrapper_version, agp_version)
+        testDebug(temp_sample_path, version_args, wrapper_version, agp_version)
 
     if len(errors) != 0:
         print(f"Found {str(len(errors))} errors:", file=sys.stderr, flush=True)
         for error in errors:
             print(f"\t{error}", file=sys.stderr, flush=True)
         sys.exit(1)
+    else:
+        print("All tests passed", flush=True)
 
 
 if __name__ == "__main__":

@@ -2,10 +2,10 @@ package io.appmetrica.analytics.gradle.plugin
 
 import io.appmetrica.analytics.gradle.agp7.Agp7AndroidApplicationHelper
 import io.appmetrica.analytics.gradle.agp8.Agp8AndroidApplicationHelper
-import io.appmetrica.analytics.gradle.common.AGPVersion
-import io.appmetrica.analytics.gradle.common.Log
-import io.appmetrica.analytics.gradle.common.VersionNumber
 import io.appmetrica.analytics.gradle.common.api.AndroidApplicationHelper
+import io.appmetrica.analytics.gradle.common.utils.AGPVersion
+import io.appmetrica.analytics.gradle.common.utils.Log
+import io.appmetrica.analytics.gradle.common.utils.VersionNumber
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 

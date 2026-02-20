@@ -2,8 +2,8 @@ package io.appmetrica.analytics.gradle.common.tasks
 
 import io.appmetrica.analytics.gradle.common.APPMETRICA_ARTIFACT
 import io.appmetrica.analytics.gradle.common.APPMETRICA_LEGACY_ARTIFACT
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.USING_TWO_APPMETRICAS_MESSAGE
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.result.ResolvedComponentResult

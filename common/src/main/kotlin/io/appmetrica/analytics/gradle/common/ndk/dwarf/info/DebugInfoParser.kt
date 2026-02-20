@@ -1,6 +1,5 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.info
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.YSym
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.DwarfException
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.FileContext
@@ -15,6 +14,7 @@ import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.reader.Deb
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.reader.SkipAttributesReader
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.NamedRangesResolver
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.IOException
 
 /* ktlint-disable appmetrica-rules:no-top-level-members */

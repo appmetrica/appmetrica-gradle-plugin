@@ -1,7 +1,7 @@
 package io.appmetrica.analytics.gradle.common.ndk.elf
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.IOException
 
 class ElfNote(

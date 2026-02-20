@@ -18,6 +18,7 @@ android {
     }
 
     buildTypes {
+        debug {}
         snapshot {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
@@ -27,6 +28,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
         }
     }
+
+    flavorDimensions 'first', 'second'
+    productFlavors {
+        firstOne {
+            dimension "first"
+        }
+        firstTwo {
+            dimension "first"
+            appmetrica {
+                enable = false
+            }
+        }
+        secondOne {
+            dimension "second"
+        }
+        secondTwo {
+            dimension "second"
+            appmetrica {
+                enable = true
+            }
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -50,11 +74,23 @@ android.applicationVariants.configureEach { variant ->
     }
 }
 
+// Priority: global > variant > buildType > flavor > default
 appmetrica {
-    enable = { true }
-    offline = { true }
+    // Global config: applies to all variants (highest priority)
+    enable = true
+    offline = true
     ndk {
-        enable = { true }
+        enable = project.provider { true }
+    }
+
+    // Per-variant config: overrides buildType and flavor settings
+    variants {
+        // Disable NDK for a specific variant
+        register("firstTwoSecondOneSnapshot") {
+            ndk {
+                enable = false
+            }
+        }
     }
 }
 

@@ -1,11 +1,11 @@
 package io.appmetrica.analytics.gradle.common.tasks
 
 import io.appmetrica.analytics.gradle.common.FileUploader
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.UPLOAD_FAILED_TEMPLATE
 import io.appmetrica.analytics.gradle.common.analytics.Analytics
 import io.appmetrica.analytics.gradle.common.analytics.AnalyticsReporter
 import io.appmetrica.analytics.gradle.common.analytics.AnalyticsStub
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.MapProperty
@@ -20,6 +20,14 @@ import kotlin.math.abs
 
 @UntrackedTask(because = "Make task cache is in progress")
 abstract class UploadTask : DefaultTask() {
+
+    @get:Internal
+    abstract val taskEnabled: Property<Boolean>
+
+    init {
+        @Suppress("LeakingThis")
+        onlyIf { taskEnabled.getOrElse(true) }
+    }
 
     @get:InputFile
     abstract val zipFile: RegularFileProperty

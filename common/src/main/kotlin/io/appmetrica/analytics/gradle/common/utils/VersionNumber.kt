@@ -1,4 +1,4 @@
-package io.appmetrica.analytics.gradle.common
+package io.appmetrica.analytics.gradle.common.utils
 
 @Suppress("ReturnCount", "MagicNumber")
 class VersionNumber private constructor(

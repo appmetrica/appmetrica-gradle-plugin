@@ -1,6 +1,5 @@
 package io.appmetrica.analytics.gradle.common.ndk
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.CompilationUnitContext
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.NamedRanges
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.line.DebugLineData
@@ -12,6 +11,7 @@ import io.appmetrica.analytics.gradle.common.ndk.elf.ElfSymbol
 import io.appmetrica.analytics.gradle.common.ndk.elf.parseElf
 import io.appmetrica.analytics.gradle.common.ndk.io.print
 import io.appmetrica.analytics.gradle.common.ndk.io.toPrettyString
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.File
 import java.io.IOException
 import java.nio.ByteOrder

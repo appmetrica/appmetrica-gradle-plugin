@@ -1,7 +1,7 @@
 package io.appmetrica.analytics.gradle.common.analytics
 
 import com.yandex.browser.rtm.LoggerDelegate
-import io.appmetrica.analytics.gradle.common.Log
+import io.appmetrica.analytics.gradle.common.utils.Log
 
 class DefaultLoggerDelegate : LoggerDelegate {
 

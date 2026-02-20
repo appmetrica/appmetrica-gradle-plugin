@@ -1,10 +1,10 @@
 package io.appmetrica.analytics.gradle.common.ndk.elf
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.DwarfException
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.parseDwarf
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import io.appmetrica.analytics.gradle.common.ndk.io.RandomAccessFileInputStream
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.File
 import java.io.IOException
 

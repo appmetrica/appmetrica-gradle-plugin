@@ -1,6 +1,5 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.CompilationUnitContext
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.parseDebugInfo
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.line.DebugLineData
@@ -9,6 +8,7 @@ import io.appmetrica.analytics.gradle.common.ndk.elf.DebugElfSectionHeaders
 import io.appmetrica.analytics.gradle.common.ndk.elf.ElfHandler
 import io.appmetrica.analytics.gradle.common.ndk.elf.ElfSectionHeader
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.IOException
 import java.nio.ByteOrder
 

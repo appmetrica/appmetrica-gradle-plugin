@@ -1,6 +1,6 @@
 package io.appmetrica.analytics.gradle.common.ndk.io
 
-import io.appmetrica.analytics.gradle.common.Log
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.File
 import java.io.IOException
 import java.io.RandomAccessFile

@@ -1,8 +1,8 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.SymbolNameProvider
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
+import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.IOException
 
 class NamedRangesResolver(

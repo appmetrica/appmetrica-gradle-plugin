@@ -1,5 +1,6 @@
-package io.appmetrica.analytics.gradle.common
+package io.appmetrica.analytics.gradle.common.utils
 
+import com.android.Version
 import org.gradle.api.Project
 
 object AGPVersion {
@@ -11,7 +12,7 @@ object AGPVersion {
     @Suppress("TooGenericExceptionCaught")
     private fun getFromVersionString(): VersionNumber? {
         return try {
-            VersionNumber.parse(com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION)
+            VersionNumber.parse(Version.ANDROID_GRADLE_PLUGIN_VERSION)
         } catch (throwable: Throwable) {
             Log.warn("Failed to parse AGP version from string.", throwable)
             null

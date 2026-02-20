@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common
 
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.apache.http.client.HttpResponseException
 import org.apache.http.client.ResponseHandler
 import org.apache.http.client.config.CookieSpecs

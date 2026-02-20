@@ -1,8 +1,8 @@
 package io.appmetrica.analytics.gradle
 
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.ndk.ElfYSymFactory
 import io.appmetrica.analytics.gradle.common.ndk.YSymSerializer
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.gradle.api.Project
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging

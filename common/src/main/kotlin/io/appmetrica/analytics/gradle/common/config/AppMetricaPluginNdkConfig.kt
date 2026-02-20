@@ -1,10 +1,11 @@
 package io.appmetrica.analytics.gradle.common.config
 
-import java.io.File
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
 
 class AppMetricaPluginNdkConfig(
-    val enable: () -> Boolean,
-    val soFiles: () -> List<File>,
-    val additionalSoFiles: () -> List<File>,
-    val addNdkCrashesDependency: () -> Boolean
+    val enable: Provider<Boolean>,
+    val soFiles: FileCollection,
+    val additionalSoFiles: FileCollection,
+    val addNdkCrashesDependency: Provider<Boolean>
 )

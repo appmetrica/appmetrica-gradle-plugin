@@ -8,10 +8,10 @@ import io.appmetrica.analytics.gradle.common.LEGACY_BUILD_ID_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_IS_OFFLINE_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_NDK_ENABLE_KEY
 import io.appmetrica.analytics.gradle.common.LEGACY_RES_VALUE_PREFIX
-import io.appmetrica.analytics.gradle.common.Log
 import io.appmetrica.analytics.gradle.common.MappingType
 import io.appmetrica.analytics.gradle.common.NDK_ENABLE_KEY
 import io.appmetrica.analytics.gradle.common.RES_VALUE_PREFIX
+import io.appmetrica.analytics.gradle.common.utils.Log
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
