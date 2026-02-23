@@ -93,8 +93,10 @@ class Agp8AndroidApplicationVariant(
         )
 
     override fun subscribeOnAssembleTask(task: TaskProvider<out DefaultTask>) {
-        project.tasks.named("assemble${original.name.uppercaseFirstChar()}").configure { it.finalizedBy(task) }
-        project.tasks.named("bundle${original.name.uppercaseFirstChar()}").configure { it.finalizedBy(task) }
+        project.tasks.matching { it.name == "assemble${original.name.uppercaseFirstChar()}" }
+            .configureEach { it.finalizedBy(task) }
+        project.tasks.matching { it.name == "bundle${original.name.uppercaseFirstChar()}" }
+            .configureEach { it.finalizedBy(task) }
     }
 
     override fun addGenerateResourceTask(
