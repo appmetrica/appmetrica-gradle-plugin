@@ -64,33 +64,45 @@ def show_gradle_version(cwd):
 
 def assemble_and_upload_mappings(cwd, build_type, args={}, expect_success=True):
     print(f"[test.py] Running assemble{build_type} for the first time", flush=True)
-    return_code = subprocess.call(
+    result = subprocess.run(
         " ".join([gradle_wrapper_bin(), f"clean assemble{build_type} -i -s"] + format_args(args)),
         shell=True,
-        cwd=cwd
+        cwd=cwd,
+        capture_output=True,
+        text=True,
     )
+    print(result.stdout, flush=True)
+    print(result.stderr, file=sys.stderr, flush=True)
+    output = result.stdout + result.stderr
 
     if expect_success:
-        if return_code != 0:
+        if result.returncode != 0:
             raise Exception(f"Failed to assemble {build_type} apk and upload mappings")
     else:
-        if return_code == 0:
+        if result.returncode == 0:
             raise Exception(f"Expected failure to assemble {build_type} apk and upload mappings")
 
     # Run again to verify configuration cache reuse works correctly
     print(f"[test.py] Running assemble{build_type} a second time", flush=True)
-    return_code = subprocess.call(
+    result = subprocess.run(
         " ".join([gradle_wrapper_bin(), f"assemble{build_type} -i -s"] + format_args(args)),
         shell=True,
-        cwd=cwd
+        cwd=cwd,
+        capture_output=True,
+        text=True,
     )
+    print(result.stdout, flush=True)
+    print(result.stderr, file=sys.stderr, flush=True)
+    output += result.stdout + result.stderr
 
     if expect_success:
-        if return_code != 0:
+        if result.returncode != 0:
             raise Exception(f"Failed to assemble {build_type} with configuration cache reuse")
     else:
-        if return_code == 0:
+        if result.returncode == 0:
             raise Exception(f"Expected failure to assemble {build_type} apk and upload mappings")
+
+    return output
 
 
 def publish_plugin_to_maven_local(cwd, args={}):
@@ -191,21 +203,39 @@ def testRelease(temp_sample_path, version_args, wrapper_version, agp_version):
         errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
 
 
+def check_build_log(output, expected_messages):
+    for message in expected_messages:
+        print(f"[test.py] Checking log for message: {message}", flush=True)
+        if message not in output:
+            raise Exception(f"Expected log message not found: {message}")
+
+
 def testDebug(temp_sample_path, version_args, wrapper_version, agp_version):
     testcases = {
-        "firstOneSecondOneDebug": False,
-        "firstTwoSecondTwoDebug": True,
+        "firstOneSecondOneDebug": {
+            "expect_success": False,
+            "expected_log_messages": [
+                "Failed to get mapping file. Make sure that obfuscation is enabled"
+                " or disable the loading of mappings in the plugin setting."
+                " If this does not help, then refer to the documentation.",
+            ],
+        },
+        "firstTwoSecondTwoDebug": {
+            "expect_success": True,
+            "expected_log_messages": [],
+        },
     }
-    for build_type, expect_success in testcases.items():
+    for build_type, config in testcases.items():
         try:
-            assemble_and_upload_mappings(
+            output = assemble_and_upload_mappings(
                 cwd=temp_sample_path,
                 build_type=build_type.capitalize(),
                 args=version_args,
-                expect_success=expect_success,
+                expect_success=config["expect_success"],
             )
+            check_build_log(output, config["expected_log_messages"])
         except Exception as error:
-            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}, expect_success={expect_success}: {str(error)}")
+            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}, expect_success={config['expect_success']}: {str(error)}")
 
 
 def test():

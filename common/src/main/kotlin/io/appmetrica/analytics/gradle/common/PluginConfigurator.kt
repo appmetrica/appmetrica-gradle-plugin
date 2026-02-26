@@ -112,7 +112,7 @@ class PluginConfigurator {
 
         return project.tasks.register(taskName, Zip::class.java) { task ->
             task.from(resourceTask.flatMap { it.buildInfoFile })
-            task.from(mappingFileProvider)
+            task.from(mappingFileProvider.map { project.files(it) }.orElse(project.files()))
             task.archiveFileName.set("mapping.zip")
             task.destinationDirectory.set(project.appMetricaBuildDir(variant).map { it.dir("result") })
 

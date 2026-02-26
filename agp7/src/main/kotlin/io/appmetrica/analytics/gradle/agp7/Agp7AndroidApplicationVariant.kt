@@ -85,11 +85,15 @@ class Agp7AndroidApplicationVariant(
 
     override val mappingFile: Provider<RegularFile>
         get() = original.mappingFileProvider
-            .flatMap { it.elements }
-            .flatMap { elements ->
-                project.objects.fileProperty().also { prop ->
-                    elements.singleOrNull()?.let { prop.set(it.asFile) }
+            .flatMap { fileCollection ->
+                val mappingFile = try {
+                    fileCollection.singleFile
+                } catch (ignore: IllegalStateException) {
+                    null
                 }
+                mappingFile
+                    ?.let { project.layout.file(project.provider { it }) }
+                    ?: project.layout.buildDirectory.file("outputs/mapping/${original.name}/mapping.txt")
             }
 
     @Suppress("TooGenericExceptionCaught", "SwallowedException")

@@ -67,13 +67,6 @@ android {
     }
 }
 
-android.applicationVariants.configureEach { variant ->
-    def uploadSymbolsTask = project.tasks.named("upload${variant.name.capitalize()}AppMetricaNdkSymbols")
-    if (uploadSymbolsTask != null) {
-        variant.assembleProvider.configure { it.finalizedBy(uploadSymbolsTask) }
-    }
-}
-
 // Priority: global > variant > buildType > flavor > default
 appmetrica {
     // Global config: applies to all variants (highest priority)
