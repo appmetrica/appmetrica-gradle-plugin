@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common.api
 
+import io.appmetrica.analytics.gradle.common.MappingType
 import io.appmetrica.analytics.gradle.common.config.AppMetricaPluginConfig
 import io.appmetrica.analytics.gradle.common.tasks.ResourcesGeneratorTask
 import org.gradle.api.DefaultTask
@@ -27,6 +28,8 @@ interface AndroidApplicationVariant {
     val splitVersionCodes: Provider<Set<Int>>
 
     val applicationId: String
+
+    val mappingType: MappingType
 
     val mappingFile: Provider<RegularFile>
 

@@ -131,7 +131,7 @@ def check_info_file_to_upload(zip_file):
         [
             info_to_upload["version_name"] == "1.0",
             info_to_upload["version_code"] == 1,
-            info_to_upload["mapping_type"] == "PROGUARD",
+            info_to_upload["mapping_type"] == "R8",
             info_to_upload["split_version_codes"] == [1]
         ]
     )

@@ -198,13 +198,7 @@ class PluginConfigurator {
         return project.tasks.register(taskName, ResourcesGeneratorTask::class.java) { task ->
             task.versionName.set(variant.versionName)
             task.versionCode.set(variant.versionCode)
-            task.mappingType.set(
-                if (((project.properties["android.enableR8"] ?: "false") as String).toBoolean()) {
-                    MappingType.R8
-                } else {
-                    MappingType.PROGUARD
-                }
-            )
+            task.mappingType.set(variant.mappingType)
             task.splitVersionCodes.set(variant.splitVersionCodes)
             task.offline.set(variant.appMetricaConfig.offline)
             task.ndkEnable.set(variant.appMetricaConfig.ndk.enable)

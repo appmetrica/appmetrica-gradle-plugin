@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common.config
 
+import io.appmetrica.analytics.gradle.common.MappingType
 import io.appmetrica.analytics.gradle.common.api.AndroidApplicationVariant
 import io.appmetrica.analytics.gradle.common.extension.AppMetricaExtension
 import io.appmetrica.analytics.gradle.common.tasks.ResourcesGeneratorTask
@@ -166,6 +167,7 @@ private fun createVariant(
         override val versionCode: Provider<Int?> = project.providers.provider { 1 }
         override val splitVersionCodes: Provider<Set<Int>> = project.providers.provider { emptySet() }
         override val applicationId: String = "com.example.app"
+        override val mappingType: MappingType = MappingType.PROGUARD
         override val mappingFile: Provider<RegularFile> = project.layout.buildDirectory.file("mapping.txt").get().let {
             project.providers.provider { it }
         }

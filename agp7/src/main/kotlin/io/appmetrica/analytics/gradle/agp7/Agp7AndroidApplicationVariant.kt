@@ -3,6 +3,7 @@ package io.appmetrica.analytics.gradle.agp7
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.api.ApplicationVariant
 import com.android.build.gradle.tasks.ExternalNativeBuildTask
+import io.appmetrica.analytics.gradle.common.MappingType
 import io.appmetrica.analytics.gradle.common.api.AndroidApplicationVariant
 import io.appmetrica.analytics.gradle.common.config.AppMetricaPluginConfig
 import io.appmetrica.analytics.gradle.common.config.ConfigFactory
@@ -64,6 +65,8 @@ class Agp7AndroidApplicationVariant(
             this
         ).appMetricaConfig
     }
+
+    override val mappingType: MappingType get() = MappingType.R8
 
     override val name: String
         get() = original.name
