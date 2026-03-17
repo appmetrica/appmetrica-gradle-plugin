@@ -26,23 +26,20 @@ class PluginConfigurator {
         project: Project,
         variant: AndroidApplicationVariant
     ) {
-        val uploadMappingTask = getOrCreateUploadMappingTask(project, variant)
-        val uploadNdkSymbolsTask = getOrCreateUploadNdkSymbolsTask(project, variant)
+        val config = variant.appMetricaConfig
+        validateConfig(config, variant.name)
 
-        project.afterEvaluate {
-            val config = variant.appMetricaConfig
-            validateConfig(config, variant.name)
+        if (config.enable.get()) {
+            val uploadMappingTask = getOrCreateUploadMappingTask(project, variant)
+            variant.subscribeOnAssembleTask(uploadMappingTask)
+        }
 
-            if (config.enable.get()) {
-                variant.subscribeOnAssembleTask(uploadMappingTask)
-            }
+        if (config.ndk.enable.get()) {
+            val uploadNdkSymbolsTask = getOrCreateUploadNdkSymbolsTask(project, variant)
+            variant.subscribeOnAssembleTask(uploadNdkSymbolsTask)
 
-            if (config.ndk.enable.get()) {
-                variant.subscribeOnAssembleTask(uploadNdkSymbolsTask)
-
-                if (config.ndk.addNdkCrashesDependency.get()) {
-                    project.dependencies.add(variant.name + "Implementation", APPMETRICA_NDK_PLUGIN)
-                }
+            if (config.ndk.addNdkCrashesDependency.get()) {
+                project.dependencies.add(variant.name + "Implementation", APPMETRICA_NDK_PLUGIN)
             }
         }
     }
