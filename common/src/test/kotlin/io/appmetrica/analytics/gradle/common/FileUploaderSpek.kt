@@ -3,6 +3,7 @@ package io.appmetrica.analytics.gradle.common
 import org.apache.http.client.HttpResponseException
 import org.assertj.core.api.Assertions.assertThat
 import org.mockserver.integration.ClientAndServer
+import org.mockserver.matchers.Times
 import org.mockserver.model.Header.header
 import org.mockserver.model.HttpRequest.request
 import org.mockserver.model.HttpResponse.response
@@ -74,7 +75,7 @@ object FileUploaderSpek : Spek({
                         header("Authorization", "Post-Api-Key $postApiKey"),
                         header("Content-Type", "application/zip; charset=utf-8")
                     ),
-                VerificationTimes.exactly(3)
+                VerificationTimes.exactly(MAX_RETRY_COUNT)
             )
         }
 
@@ -96,6 +97,83 @@ object FileUploaderSpek : Spek({
             } catch (e: HttpResponseException) {
                 assertThat(e.statusCode).isEqualTo(404)
             }
+        }
+
+        it("succeeds after intermediate 500 responses") {
+            mockServer.`when`(
+                request().withMethod("PUT").withPath("/"),
+                Times.exactly(2)
+            ).respond(
+                response().withStatusCode(500).withBody("")
+            )
+            mockServer.`when`(
+                request().withMethod("PUT").withPath("/")
+            ).respond(
+                response().withStatusCode(200).withBody("")
+            )
+
+            fileUploader.uploadFile(File.createTempFile("prefix", "postfix"))
+
+            mockServer.verify(
+                request().withMethod("PUT").withPath("/"),
+                VerificationTimes.exactly(MAX_RETRY_COUNT)
+            )
+        }
+
+        it("retry budget is independent across calls on the same instance") {
+            mockServer.`when`(
+                request().withMethod("PUT").withPath("/")
+            ).respond(
+                response().withStatusCode(500).withBody("")
+            )
+
+            fileUploader.uploadFile(File.createTempFile("prefix1", "postfix"))
+            fileUploader.uploadFile(File.createTempFile("prefix2", "postfix"))
+
+            mockServer.verify(
+                request().withMethod("PUT").withPath("/"),
+                VerificationTimes.exactly(MAX_RETRY_COUNT * 2)
+            )
+        }
+    }
+
+    describe("upload file via proxy") {
+        val proxyPort = 8889
+        val postApiKey = "postApiKey"
+        lateinit var mockServer: ClientAndServer
+        val savedProperties = mutableMapOf<String, String?>()
+        val proxyPropertyKeys = listOf("http.proxyHost", "http.proxyPort", "http.nonProxyHosts")
+
+        beforeEachTest {
+            mockServer = ClientAndServer.startClientAndServer(proxyPort)
+            proxyPropertyKeys.forEach { savedProperties[it] = System.getProperty(it) }
+            System.setProperty("http.proxyHost", "localhost")
+            System.setProperty("http.proxyPort", proxyPort.toString())
+            System.clearProperty("http.nonProxyHosts")
+        }
+
+        afterEachTest {
+            mockServer.close()
+            savedProperties.forEach { (key, value) ->
+                if (value == null) System.clearProperty(key) else System.setProperty(key, value)
+            }
+            savedProperties.clear()
+        }
+
+        it("routes requests through http.proxyHost / http.proxyPort") {
+            mockServer.`when`(
+                request().withMethod("PUT")
+            ).respond(
+                response().withStatusCode(200).withBody("")
+            )
+
+            val fileUploader = FileUploader("http://unreachable.invalid/upload", postApiKey)
+            fileUploader.uploadFile(File.createTempFile("prefix", "postfix"))
+
+            mockServer.verify(
+                request().withMethod("PUT"),
+                VerificationTimes.exactly(1)
+            )
         }
     }
 })

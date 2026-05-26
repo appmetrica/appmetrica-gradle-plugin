@@ -1,4 +1,4 @@
-@file:SuppressWarnings("TooManyFunctions")
+@file:Suppress("TooManyFunctions")
 
 package io.appmetrica.analytics.gradle.common.ndk
 

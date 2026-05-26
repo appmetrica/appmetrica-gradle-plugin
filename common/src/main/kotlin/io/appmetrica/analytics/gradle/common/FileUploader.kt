@@ -17,10 +17,10 @@ class FileUploader(
     private val postApiKey: String
 ) {
 
-    private var retryCount = 0
-
     fun uploadFile(zippedFile: File) {
+        var retryCount = 0
         val httpClient = HttpClients.custom()
+            .useSystemProperties()
             .setDefaultRequestConfig(
                 RequestConfig.custom()
                     .setCookieSpec(CookieSpecs.STANDARD)
