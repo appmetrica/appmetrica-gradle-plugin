@@ -203,6 +203,38 @@ def testRelease(temp_sample_path, version_args, wrapper_version, agp_version):
         errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
 
 
+def assert_value_source(output, parameter_name, expected_value):
+    print(f"[test.py] Asserting value source for {parameter_name}: expected `{expected_value}`", flush=True)
+    expected_line = f"Using unique value `{expected_value}` for {parameter_name}"
+    if expected_line not in output:
+        raise Exception(
+            f"Expected log line not found: {expected_line!r}. "
+            "This indicates the Kotlin DSL `appmetrica { }` block inside `buildTypes { ... }` "
+            "did not resolve to the per-buildType extension."
+        )
+
+
+def testKtsRelease(temp_sample_path, version_args, wrapper_version, agp_version):
+    build_type = "release"
+    try:
+        output = assemble_and_upload_mappings(
+            cwd=temp_sample_path,
+            build_type=build_type.capitalize(),
+            args=version_args,
+        )
+        check_mapping_files_to_upload(
+            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
+            mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
+        )
+        assert_value_source(
+            output=output,
+            parameter_name="postApiKey",
+            expected_value="kts-release-key",
+        )
+    except Exception as error:
+        errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
+
+
 def check_build_log(output, expected_messages):
     for message in expected_messages:
         print(f"[test.py] Checking log for message: {message}", flush=True)
@@ -256,8 +288,11 @@ def test():
             show_gradle_version(temp_sample_path)
         except Exception as error:
             errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}: {str(error)}")
-        testRelease(temp_sample_path, version_args, wrapper_version, agp_version)
-        testDebug(temp_sample_path, version_args, wrapper_version, agp_version)
+        if os.path.basename(os.path.normpath(sample_path)) == "sample-kts":
+            testKtsRelease(temp_sample_path, version_args, wrapper_version, agp_version)
+        else:
+            testRelease(temp_sample_path, version_args, wrapper_version, agp_version)
+            testDebug(temp_sample_path, version_args, wrapper_version, agp_version)
 
     if len(errors) != 0:
         print(f"Found {str(len(errors))} errors:", file=sys.stderr, flush=True)

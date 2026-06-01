@@ -19,6 +19,10 @@ import javax.inject.Inject
  *
  * Example usage:
  * ```kotlin
+ * // For Kotlin DSL, import the matching extension function for your AGP version:
+ * //   import io.appmetrica.analytics.gradle.agp8.appmetrica  // for AGP 8.x
+ * //   import io.appmetrica.analytics.gradle.agp7.appmetrica  // for AGP 7.x
+ *
  * // Global settings
  * appmetrica {
  *     enableAnalytics.set(true)

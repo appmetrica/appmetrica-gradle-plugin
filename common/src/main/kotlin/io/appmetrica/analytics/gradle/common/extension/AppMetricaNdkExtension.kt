@@ -8,6 +8,10 @@ import org.gradle.api.provider.Property
  *
  * Per-buildType and per-flavor NDK settings are configured via:
  * ```kotlin
+ * // For Kotlin DSL, import the matching extension function for your AGP version:
+ * //   import io.appmetrica.analytics.gradle.agp8.appmetrica  // for AGP 8.x
+ * //   import io.appmetrica.analytics.gradle.agp7.appmetrica  // for AGP 7.x
+ *
  * android.buildTypes {
  *     named("release") {
  *         appmetrica {
