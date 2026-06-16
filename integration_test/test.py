@@ -7,6 +7,7 @@ import sys
 import tempfile
 import zipfile
 import shutil
+from pathlib import Path
 
 plugin_path = "."
 
@@ -30,14 +31,15 @@ def gradle_wrapper(cwd, args={}):
     print("[test.py] Running wrapper", flush=True)
     gradle_wrapper_properties = f"{cwd}/gradle/wrapper/gradle-wrapper.properties"
     wrapper_version = args["wrapper.version"]
+    distribution_base_url = os.environ.get("GRADLE_DISTRIBUTION_URL", "https://services.gradle.org/distributions")
     with open(gradle_wrapper_properties, "w") as f:
         f.write("distributionBase=GRADLE_USER_HOME\n")
         f.write("distributionPath=wrapper/dists\n")
-        f.write(f"distributionUrl=https://services.gradle.org/distributions/gradle-{wrapper_version}.zip\n")
+        f.write(f"distributionUrl={distribution_base_url}/gradle-{wrapper_version}.zip\n")
         f.write("zipStoreBase=GRADLE_USER_HOME\n")
         f.write("zipStorePath=wrapper/dists\n")
     return_code = subprocess.call(
-        " ".join([gradle_wrapper_bin(), "wrapper"] + format_args(args)),
+        " ".join([gradle_wrapper_bin(), "wrapper -i -s"] + format_args(args)),
         shell=True,
         cwd=cwd
     )
@@ -271,6 +273,10 @@ def testDebug(temp_sample_path, version_args, wrapper_version, agp_version):
 
 
 def test():
+    for file in (Path.home() / ".gradle/init.d").rglob("*.init.gradle.kts"):
+        file.unlink()
+        print(f"Deleted: {file}")
+
     publish_plugin_to_maven_local(plugin_path)
 
     wrapper_version = args.gradle_wrapper_version
@@ -283,11 +289,17 @@ def test():
             "agpVersion": agp_version,
             "wrapper.version": wrapper_version,
         }
+
+        gradle_updated = False
         try:
             gradle_wrapper(temp_sample_path, version_args)
             show_gradle_version(temp_sample_path)
+            gradle_updated = True
         except Exception as error:
             errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}: {str(error)}")
+        if not gradle_updated:
+            continue
+
         if os.path.basename(os.path.normpath(sample_path)) == "sample-kts":
             testKtsRelease(temp_sample_path, version_args, wrapper_version, agp_version)
         else:
