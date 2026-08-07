@@ -7,16 +7,18 @@ out
 .classpath
 _*
 *.iml
-.idea/*
-!.idea/copyright
+**/.idea/*
+!**/.idea/copyright
 .gradle
 .svn
 .deps
-out
 
 local.properties
 
-native/libs
-native/obj
+libs
+captures
+.externalNativeBuild
+.cxx
+**/native/obj
 
 *.ysym
