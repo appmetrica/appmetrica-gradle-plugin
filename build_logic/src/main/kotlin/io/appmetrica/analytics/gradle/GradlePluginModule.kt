@@ -31,6 +31,7 @@ class GradlePluginModule : Plugin<Project> {
         project.version = Constants.Library.versionName + (project.properties["versionPostfix"] ?: "")
 
         project.createEmbedConfiguration()
+        project.configureElfFixturesRebuild()
         project.configureTests()
         project.configureJacoco()
         project.configureJavaVersion()
@@ -63,6 +64,29 @@ class GradlePluginModule : Plugin<Project> {
         }
     }
 
+    private fun Project.configureElfFixturesRebuild() {
+        val source = layout.projectDirectory.file("elf-fixtures/fixture.c")
+        val extraSource = layout.projectDirectory.file("elf-fixtures/fixture_extra.c")
+        if (!source.asFile.isFile || !extraSource.asFile.isFile) return
+
+        tasks.register("rebuildElfFixtures", RebuildElfFixtures::class.java) {
+            group = "verification"
+            description = "Rebuilds checked-in ELF test fixtures with Android NDK r27c"
+            ndkPath.set(
+                providers.gradleProperty("androidNdkPath")
+                    .orElse(providers.environmentVariable("ANDROID_NDK_HOME"))
+            )
+            androidHome.set(
+                providers.environmentVariable("ANDROID_HOME")
+                    .orElse(providers.environmentVariable("ANDROID_SDK_ROOT"))
+            )
+            fixtureSource.set(source)
+            extraFixtureSource.set(extraSource)
+            outputDirectory.set(layout.projectDirectory.dir("src/test/resources/elf-fixtures"))
+            outputs.upToDateWhen { false }
+        }
+    }
+
     private fun Project.createEmbedConfiguration() {
         val embed: Configuration by project.configurations.creating
 
@@ -80,9 +104,11 @@ class GradlePluginModule : Plugin<Project> {
                     }
                 }
             }
-            from(embeddedDependencies.map { dependency ->
-                dependency.moduleArtifacts.map { zipTree(it.file.canonicalFile) }
-            })
+            from(
+                embeddedDependencies.map { dependency ->
+                    dependency.moduleArtifacts.map { zipTree(it.file.canonicalFile) }
+                }
+            )
         }
     }
 

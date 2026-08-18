@@ -22,3 +22,5 @@ captures
 **/native/obj
 
 *.ysym
+
+!common/src/test/resources/elf-fixtures/*.so
