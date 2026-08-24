@@ -18,6 +18,10 @@ The directory contains the following Android ELF shared objects:
 | `libno-symbols.so` | arm64-v8a | none | no | valid shared object with no extractable symbols |
 | `libbuild-id-segment-only.so` | arm64-v8a | DWARF 4 | yes | build ID available only through `PT_NOTE` |
 
+When adding a new `.so` fixture, also add its path to the
+[GitHub sync allowlist](https://nda.ya.ru/t/yAY9ZBlH7oE72S).
+Otherwise the binary will not be published.
+
 The DWARF 4/5/mixed libraries are fixed binary artifacts because compiler
 upgrades can change their encoding and invalidate the regression coverage.
 
