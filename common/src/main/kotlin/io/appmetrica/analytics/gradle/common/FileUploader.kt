@@ -1,15 +1,12 @@
 package io.appmetrica.analytics.gradle.common
 
 import io.appmetrica.analytics.gradle.common.utils.Log
-import org.apache.http.client.HttpResponseException
-import org.apache.http.client.ResponseHandler
-import org.apache.http.client.config.CookieSpecs
-import org.apache.http.client.config.RequestConfig
-import org.apache.http.client.methods.HttpPut
-import org.apache.http.entity.FileEntity
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.util.EntityUtils
 import java.io.File
+import java.net.ProxySelector
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 @Suppress("MagicNumber")
 class FileUploader(
@@ -18,44 +15,46 @@ class FileUploader(
 ) {
 
     fun uploadFile(zippedFile: File) {
-        var retryCount = 0
-        val httpClient = HttpClients.custom()
-            .useSystemProperties()
-            .setDefaultRequestConfig(
-                RequestConfig.custom()
-                    .setCookieSpec(CookieSpecs.STANDARD)
-                    .build()
-            )
+        val httpClientBuilder = HttpClient.newBuilder()
+            .proxy(ProxySelector.getDefault())
+        HttpSystemTimeouts.connectTimeout()?.let { httpClientBuilder.connectTimeout(it) }
+
+        val request = HttpRequest.newBuilder(URI.create(url))
+            .PUT(HttpRequest.BodyPublishers.ofFile(zippedFile.toPath()))
+            .header("Authorization", "Post-Api-Key $postApiKey")
+            .header("Content-Type", "application/zip; charset=utf-8")
             .build()
-        val httpPut = HttpPut(url)
-        httpPut.entity = FileEntity(zippedFile)
-        httpPut.addHeader("Authorization", "Post-Api-Key $postApiKey")
-        httpPut.addHeader("Content-Type", "application/zip; charset=utf-8")
 
-        Log.info("Executing request ${httpPut.requestLine}")
+        val httpClient = httpClientBuilder.build()
 
-        val responseHandler = ResponseHandler<String> { response ->
-            val status = response.statusLine.statusCode
-            val body = EntityUtils.toString(response.entity)
-            if (status in 200..299) {
-                body
-            } else {
-                throw HttpResponseException(status, "Unexpected response status $status $body")
-            }
-        }
-        do {
-            try {
-                val responseBody = httpClient.execute(httpPut, responseHandler)
-                Log.info("Request succeeded with response body $responseBody")
-                return
-            } catch (e: HttpResponseException) {
-                if (e.statusCode in 500..599) {
-                    Log.debug("Request failed with status code ${e.statusCode}. Retrying...")
-                    retryCount += 1
-                } else {
-                    throw e
+        Log.info("Executing request PUT $url")
+
+        var lastServerError: HttpResponseException? = null
+        repeat(MAX_RETRY_COUNT) { attempt ->
+            val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString())
+            val status = response.statusCode()
+            val body = response.body().orEmpty()
+            when {
+                status in 200..299 -> {
+                    Log.info("Request succeeded with response body $body")
+                    return
+                }
+                status in 500..599 -> {
+                    lastServerError = HttpResponseException(
+                        status,
+                        "Unexpected response status $status $body"
+                    )
+                    if (attempt < MAX_RETRY_COUNT - 1) {
+                        Log.debug("Request failed with status code $status. Retrying...")
+                    }
+                }
+                else -> {
+                    throw HttpResponseException(status, "Unexpected response status $status $body")
                 }
             }
-        } while (retryCount < MAX_RETRY_COUNT)
+        }
+        throw requireNotNull(lastServerError) {
+            "Upload failed after $MAX_RETRY_COUNT attempts without a captured server error"
+        }
     }
 }

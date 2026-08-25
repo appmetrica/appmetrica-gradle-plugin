@@ -48,7 +48,6 @@ class GradlePluginModule : Plugin<Project> {
             implementation(localGroovy())
             implementation(gradleApi())
 
-            implementation(appMetricaGradlePluginLibs.findLibrary("httpBuilder-apache").get())
             implementation(appMetricaGradlePluginLibs.findLibrary("kotlin-stdlib").get())
             implementation(appMetricaGradlePluginLibs.findLibrary("gson").get())
 
