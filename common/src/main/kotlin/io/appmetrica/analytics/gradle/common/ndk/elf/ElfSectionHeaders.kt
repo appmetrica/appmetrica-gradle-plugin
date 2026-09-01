@@ -8,7 +8,11 @@ const val ELF_SECTION_DEBUG_INFO = ".debug_info"
 const val ELF_SECTION_DEBUG_ABBREV = ".debug_abbrev"
 const val ELF_SECTION_DEBUG_STR = ".debug_str"
 const val ELF_SECTION_DEBUG_RANGES = ".debug_ranges"
+const val ELF_SECTION_DEBUG_RNGLISTS = ".debug_rnglists"
+const val ELF_SECTION_DEBUG_ADDR = ".debug_addr"
+const val ELF_SECTION_DEBUG_STR_OFFSETS = ".debug_str_offsets"
 const val ELF_SECTION_DEBUG_LINE = ".debug_line"
+const val ELF_SECTION_DEBUG_LINE_STR = ".debug_line_str"
 const val ELF_SECTION_NOTE_GNU_BUILD_ID = ".note.gnu.build-id"
 
 class ElfSectionHeaders(private val list: List<ElfSectionHeader>) {

@@ -1,6 +1,7 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.line
 
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.DwarfException
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.CompilationUnitContext
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.line.opcode.processOpcode
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
@@ -9,9 +10,9 @@ import java.io.IOException
 @Throws(IOException::class, DwarfException::class)
 fun parseDebugLinesFromCurrentOffset(
     reader: ByteReader,
-    offsetSize: Int
+    compilationUnit: CompilationUnitContext
 ): DebugLineData {
-    val context = reader.readDebugLineContext(offsetSize)
+    val context = reader.readDebugLineContext(compilationUnit.header.addressSize, compilationUnit)
     return DebugLineData(parseCompilationUnit(reader, context), context)
 }
 /* ktlint-enable appmetrica-rules:no-top-level-members */

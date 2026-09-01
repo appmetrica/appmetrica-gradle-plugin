@@ -4,6 +4,7 @@ import io.appmetrica.analytics.gradle.common.ndk.dwarf.SimpleSymbolNameProvider
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.SymbolNameProvider
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.DWAttribute
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.DWForm
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.isAddressClass
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.CompilationUnitContext
 
 abstract class FuncAttributeProcessor<T>(
@@ -24,21 +25,21 @@ abstract class FuncAttributeProcessor<T>(
         when (attribute) {
             DWAttribute.HIGH_PC -> {
                 highPc = cuContext.fileContext.referenceBytesConverter.asLongValue(value)
-                isHighPcAddress = false
+                isHighPcAddress = form.isAddressClass()
             }
             else -> {
             }
         }
     }
 
-    override fun processAttribute(attribute: DWAttribute, value: Long) {
+    override fun processAttribute(attribute: DWAttribute, form: DWForm, value: Long) {
         when (attribute) {
             DWAttribute.SPECIFICATION -> specification = value
             DWAttribute.ABSTRACT_ORIGIN -> abstractOrigin = value
             DWAttribute.LOW_PC -> lowPc = value
             DWAttribute.HIGH_PC -> {
                 highPc = value
-                isHighPcAddress = true
+                isHighPcAddress = form.isAddressClass()
             }
             DWAttribute.RANGES -> rangesOffset = value
             else -> {

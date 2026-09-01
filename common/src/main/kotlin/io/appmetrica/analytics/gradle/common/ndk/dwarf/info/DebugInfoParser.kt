@@ -1,6 +1,9 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.info
 
 import io.appmetrica.analytics.gradle.common.ndk.YSym
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.DWARF_VERSION_5
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.DW_UT_COMPILE
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.DW_UT_PARTIAL
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.DwarfException
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.FileContext
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.DWTag
@@ -13,8 +16,8 @@ import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.processor.
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.reader.DebugAttributesReader
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.reader.SkipAttributesReader
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.NamedRangesResolver
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.range.resolveRangeList
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
-import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.IOException
 
 /* ktlint-disable appmetrica-rules:no-top-level-members */
@@ -27,8 +30,8 @@ fun parseDebugInfo(
     reader.seek(debugInfoHeader.offset)
     val sectionEndOffset = debugInfoHeader.offset + debugInfoHeader.size
     val compilationUnitContexts = mutableListOf<CompilationUnitContext>()
-    while (reader.getCurrentOffset() != sectionEndOffset) {
-        compilationUnitContexts.add(parseCompilationUnit(reader, fileContext))
+    while (reader.getCurrentOffset() < sectionEndOffset) {
+        parseCompilationUnit(reader, fileContext)?.let { compilationUnitContexts.add(it) }
     }
     return compilationUnitContexts
 }
@@ -37,10 +40,27 @@ fun parseDebugInfo(
 fun parseCompilationUnit(
     reader: ByteReader,
     fileContext: FileContext
-): CompilationUnitContext {
+): CompilationUnitContext? {
     val header = reader.readCompilationUnitHeader(fileContext.debugHeaders.debugInfo.offset)
-    val debugAbbrevOffset = fileContext.debugHeaders.debugAbbrev.offset + header.abbrevOffset
-    return parseCompilationUnit(reader, fileContext, header, parseAbbrevSection(reader, debugAbbrevOffset))
+    try {
+        if (header.version >= DWARF_VERSION_5 &&
+            header.unitType != DW_UT_COMPILE &&
+            header.unitType != DW_UT_PARTIAL
+        ) {
+            return null
+        }
+        val debugAbbrevOffset = fileContext.debugHeaders.debugAbbrev.offset + header.abbrevOffset
+        val indexedValues = DwarfIndexedValueResolver(reader, header, fileContext.debugHeaders)
+        return parseCompilationUnit(
+            reader,
+            fileContext,
+            header,
+            parseAbbrevSection(reader, debugAbbrevOffset),
+            indexedValues
+        )
+    } finally {
+        reader.seek(header.endOffset)
+    }
 }
 /* ktlint-enable appmetrica-rules:no-top-level-members */
 
@@ -49,13 +69,14 @@ private fun parseCompilationUnit(
     reader: ByteReader,
     fileContext: FileContext,
     header: CompilationUnitHeader,
-    abbrevEntries: Map<Int, DebugAbbrevEntry>
+    abbrevEntries: Map<Int, DebugAbbrevEntry>,
+    indexedValues: DwarfIndexedValueResolver
 ): CompilationUnitContext {
     val abbrevCode = reader.readULEB128()
     val abbrevEntry = abbrevEntries.getOrElse(abbrevCode) {
         throw DwarfException("Unrecognized abbreviations code: $abbrevCode")
     }
-    val context = parseCompilationUnitEntry(reader, fileContext, header, abbrevEntry.attributes)
+    val context = parseCompilationUnitEntry(reader, fileContext, header, abbrevEntry.attributes, indexedValues)
     if (abbrevEntry.hasChildren) {
         context.subPrograms.addAll(parseChildEntries(reader, context, abbrevEntries))
     }
@@ -117,18 +138,17 @@ private fun parseSubProgram(
     entryOffset: Long,
     attributes: List<DebugAbbrevAttribute>
 ): YSym.SubProgram {
-    val namedRangesResolver = NamedRangesResolver(
-        reader,
-        context.header.addressSize,
-        context.fileContext.debugHeaders.debugRanges!!.offset
+    val attributeProcessor = SubProgramAttributeProcessor(
+        entryOffset,
+        context,
+        context.createNamedRangesResolver(reader)
     )
-    val attributeProcessor = SubProgramAttributeProcessor(entryOffset, context, namedRangesResolver)
     val attributesReader = DebugAttributesReader(
         reader,
         context.header,
-        context.fileContext.referenceBytesConverter,
+        context.fileContext,
         attributeProcessor,
-        context.fileContext.debugHeaders.debugStr.offset
+        context.indexedValues
     )
     return attributesReader.readAttributes(attributes)
 }
@@ -140,18 +160,18 @@ private fun parseInline(
     attributes: List<DebugAbbrevAttribute>,
     depth: Int
 ): YSym.Inline {
-    val namedRangesResolver = NamedRangesResolver(
-        reader,
-        context.header.addressSize,
-        context.fileContext.debugHeaders.debugRanges!!.offset
+    val attributeProcessor = InlineSubroutineAttributeProcessor(
+        entryOffset,
+        context,
+        context.createNamedRangesResolver(reader),
+        depth
     )
-    val attributeProcessor = InlineSubroutineAttributeProcessor(entryOffset, context, namedRangesResolver, depth)
     val attributesReader = DebugAttributesReader(
         reader,
         context.header,
-        context.fileContext.referenceBytesConverter,
+        context.fileContext,
         attributeProcessor,
-        context.fileContext.debugHeaders.debugStr.offset
+        context.indexedValues
     )
     return attributesReader.readAttributes(attributes)
 }
@@ -169,57 +189,43 @@ private fun parseCompilationUnitEntry(
     reader: ByteReader,
     fileContext: FileContext,
     header: CompilationUnitHeader,
-    attributes: List<DebugAbbrevAttribute>
+    attributes: List<DebugAbbrevAttribute>,
+    indexedValues: DwarfIndexedValueResolver
 ): CompilationUnitContext {
     val attributeProcessor = CompileUnitAttributeProcessor(fileContext.referenceBytesConverter)
     val attributesReader = DebugAttributesReader(
         reader,
         header,
-        fileContext.referenceBytesConverter,
+        fileContext,
         attributeProcessor,
-        fileContext.debugHeaders.debugStr.offset
+        indexedValues
     )
     val entryData = attributesReader.readAttributes(attributes)
-    val ranges = entryData.rangesSecOffset?.let {
-        resolveRanges(reader, header.addressSize, fileContext.debugHeaders.debugRanges!!.offset, it, entryData.lowPc)
-    } ?: listOf(entryData.lowPc to entryData.highPc)
-    return CompilationUnitContext(fileContext, header, entryData, ranges)
-}
-
-private fun resolveRanges(
-    reader: ByteReader,
-    addressSize: Int,
-    rangesSectionOffset: Long,
-    offset: Long?,
-    baseAddress: Long
-): List<Pair<Long, Long>> {
-    if (offset == null) {
-        return emptyList()
-    }
-    val originalOffset = reader.getCurrentOffset()
-    val ranges = mutableListOf<Pair<Long, Long>>()
-    try {
-        reader.seek(rangesSectionOffset + offset)
-        var currentBaseAddress = baseAddress
-        while (true) {
-            var beginAddress = reader.readLong(addressSize)
-            var endAddress = reader.readLong(addressSize)
-            if (beginAddress == 0L && endAddress == 0L) {
-                break
-            }
-            if (beginAddress == -1L) {
-                currentBaseAddress = endAddress
-            } else {
-                beginAddress += currentBaseAddress
-                endAddress += currentBaseAddress
-                ranges.add(beginAddress to endAddress)
-            }
+    val ranges = entryData.rangesSecOffset?.let { offset ->
+        header.rangesSectionOffset(fileContext)?.let { sectionOffset ->
+            reader.resolveRangeList(
+                header.addressSize,
+                sectionOffset + offset,
+                entryData.lowPc,
+                header.version,
+                indexedValues::resolveAddress
+            )
         }
-    } catch (e: IOException) {
-        Log.debug("Could not properly resolve range entries $e")
-    } finally {
-        reader.seek(originalOffset)
+    } ?: listOf(entryData.lowPc to entryData.highPc)
+    return CompilationUnitContext(fileContext, header, entryData, ranges, indexedValues)
+}
+
+private fun CompilationUnitHeader.rangesSectionOffset(fileContext: FileContext) =
+    if (version >= DWARF_VERSION_5) {
+        fileContext.debugHeaders.debugRnglists?.offset
+    } else {
+        fileContext.debugHeaders.debugRanges?.offset
     }
 
-    return ranges
-}
+private fun CompilationUnitContext.createNamedRangesResolver(reader: ByteReader) = NamedRangesResolver(
+    reader,
+    header.addressSize,
+    header.rangesSectionOffset(fileContext),
+    header.version,
+    indexedValues::resolveAddress
+)

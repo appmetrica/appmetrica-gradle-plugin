@@ -43,7 +43,7 @@ fun parseDebugLineData(
     return if (debugLineOffset != null) {
         try {
             reader.seek(debugLineSectionHeader.offset + debugLineOffset)
-            parseDebugLinesFromCurrentOffset(reader, context.header.addressSize)
+            parseDebugLinesFromCurrentOffset(reader, context)
         } catch (e: DwarfException) {
             Log.debug("Could not parse debug line data : $e")
             DebugLineData()

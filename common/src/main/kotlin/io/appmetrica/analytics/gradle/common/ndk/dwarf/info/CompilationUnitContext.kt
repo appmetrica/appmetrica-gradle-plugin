@@ -12,7 +12,8 @@ class CompilationUnitContext private constructor(
     val header: CompilationUnitHeader,
     val lowPc: Long = 0,
     val highPc: Long = -1,
-    val debugLineOffset: Long? = null
+    val debugLineOffset: Long? = null,
+    val indexedValues: DwarfIndexedValueResolver
 ) {
 
     val namedRanges = mutableListOf<NamedRange>()
@@ -23,8 +24,18 @@ class CompilationUnitContext private constructor(
         fileContext: FileContext,
         header: CompilationUnitHeader,
         entryData: EntryData,
-        ranges: List<Pair<Long, Long>>
-    ) : this(entryData.name, ranges, fileContext, header, entryData.lowPc, entryData.lowPc, entryData.stmtList)
+        ranges: List<Pair<Long, Long>>,
+        indexedValues: DwarfIndexedValueResolver
+    ) : this(
+        entryData.name,
+        ranges,
+        fileContext,
+        header,
+        entryData.lowPc,
+        entryData.lowPc,
+        entryData.stmtList,
+        indexedValues
+    )
 
     class EntryData(val name: String, val rangesSecOffset: Long?, val lowPc: Long, val highPc: Long, val stmtList: Long)
 }

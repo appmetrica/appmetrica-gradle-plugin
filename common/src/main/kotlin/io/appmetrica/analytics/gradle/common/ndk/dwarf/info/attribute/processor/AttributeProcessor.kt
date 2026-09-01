@@ -7,7 +7,7 @@ interface AttributeProcessor<T> {
 
     fun processAttribute(attribute: DWAttribute, form: DWForm, value: ByteArray)
 
-    fun processAttribute(attribute: DWAttribute, value: Long)
+    fun processAttribute(attribute: DWAttribute, form: DWForm, value: Long)
 
     fun processAttribute(attribute: DWAttribute, value: String)
 

@@ -19,14 +19,10 @@ object ElfYSymFactoryFixturesSpek : Spek({
         "libdwarf4-x86.so" to ExpectedSymbols(elf = true, dwarf = true),
         "libdwarf4-x86_64.so" to ExpectedSymbols(elf = true, dwarf = true),
         "libdwarf4.so" to ExpectedSymbols(elf = true, dwarf = true),
+        "libdwarf5.so" to ExpectedSymbols(elf = true, dwarf = true),
+        "libdwarfmixed.so" to ExpectedSymbols(elf = true, dwarf = true),
         "libelf-symbols-only.so" to ExpectedSymbols(elf = true, dwarf = false),
         "libno-symbols.so" to ExpectedSymbols(elf = false, dwarf = false)
-    )
-    val disabledFixtures = setOf(
-        // enable after DWARF 5 abbreviations are supported.
-        "libdwarf5.so",
-        // enable after mixed DWARF abbreviation tables are supported.
-        "libdwarfmixed.so"
     )
 
     describe("ELF test fixtures") {
@@ -46,7 +42,7 @@ object ElfYSymFactoryFixturesSpek : Spek({
             }.filter { it.isFile && it.extension == "so" }.map { it.name }.toSet()
 
             assertThat(actualFixtures).containsExactlyInAnyOrderElementsOf(
-                expectedSymbolsByFixture.keys + disabledFixtures
+                expectedSymbolsByFixture.keys
             )
         }
 
@@ -70,6 +66,11 @@ object ElfYSymFactoryFixturesSpek : Spek({
                     softly.assertThat(symbols.compileUnits.isNotEmpty())
                         .describedAs("%s DWARF symbols presence", fixtureName)
                         .isEqualTo(expectedSymbols.dwarf)
+                    if (expectedSymbols.dwarf) {
+                        softly.assertThat(symbols.compileUnits.map { it.name })
+                            .describedAs("%s DWARF compilation unit names", fixtureName)
+                            .allMatch { it.isNotBlank() }
+                    }
                 }
                 softly.assertAll()
             }

@@ -95,8 +95,3 @@ Run the fixture test after rebuilding:
 ./gradlew :common:test \
   --tests=io.appmetrica.analytics.gradle.common.ndk.ElfYSymFactoryFixturesSpek
 ```
-
-The DWARF 5 and mixed-DWARF fixtures are temporarily excluded from parsing
-tests until their corresponding parser issues are fixed. They remain covered
-by the fixture completeness check and must not be removed when rebuilding the
-checked-in binaries.

@@ -1,10 +1,13 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.line
 
-class DebugLineRegisters(private val defaultIsStatement: Boolean) {
+class DebugLineRegisters(
+    private val defaultIsStatement: Boolean,
+    private val defaultFile: Int = 1
+) {
 
     var address: Long = 0
     var opIndex: Int = 0
-    var file: Int = 1
+    var file: Int = defaultFile
     var line: Long = 1
     var column: Long = 0
     var isStatement: Boolean = defaultIsStatement
@@ -22,7 +25,7 @@ class DebugLineRegisters(private val defaultIsStatement: Boolean) {
     fun reset() {
         address = 0
         opIndex = 0
-        file = 1
+        file = defaultFile
         line = 1
         column = 0
         isStatement = defaultIsStatement

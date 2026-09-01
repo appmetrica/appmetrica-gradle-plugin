@@ -1,6 +1,7 @@
 package io.appmetrica.analytics.gradle.common.ndk.dwarf.line
 
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.DWARF_VERSION_4
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.DWARF_VERSION_5
 import io.appmetrica.analytics.gradle.common.ndk.io.ByteReader
 import java.io.IOException
 
@@ -19,6 +20,7 @@ class DebugLineHeader(
     val lineRange: Byte,
     val opcodeBase: Byte,
     val standardOpcodeLengths: ByteArray,
+    val wordSize: Int,
     val endOffset: Long
 )
 
@@ -28,6 +30,10 @@ fun ByteReader.readDebugLineHeader(): DebugLineHeader {
     val (wordSize, length) = readDebugLineLength()
     val endOffset = getCurrentOffset() + length
     val version = readInt(Short.SIZE_BYTES)
+    if (version >= DWARF_VERSION_5) {
+        readInt(Byte.SIZE_BYTES)
+        readInt(Byte.SIZE_BYTES)
+    }
     val headerLength = readLong(wordSize)
     val minInstructionLength = readByte()
     val maxOperationsPerInstruction = if (version >= DWARF_VERSION_4) readByte() else 1
@@ -50,6 +56,7 @@ fun ByteReader.readDebugLineHeader(): DebugLineHeader {
         lineRange,
         opcodeBase,
         standardOpcodeLengths,
+        wordSize,
         endOffset
     )
 }

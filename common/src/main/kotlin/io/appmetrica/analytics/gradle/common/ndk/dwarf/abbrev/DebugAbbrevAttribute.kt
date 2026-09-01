@@ -5,7 +5,8 @@ import java.io.IOException
 
 class DebugAbbrevAttribute(
     val name: DWAttribute,
-    val form: DWForm
+    val form: DWForm,
+    val implicitConst: Long = 0
 )
 
 /* ktlint-disable appmetrica-rules:no-top-level-members */
@@ -24,9 +25,11 @@ private fun ByteReader.readDebugAbbrevAttribute(): DebugAbbrevAttribute? {
     return if (name == 0 && form == 0) {
         null
     } else {
+        val dwForm = DWForm.fromValue(form)
         DebugAbbrevAttribute(
             DWAttribute.fromValue(name),
-            DWForm.fromValue(form)
+            dwForm,
+            implicitConst = if (dwForm == DWForm.IMPLICIT_CONST) readSLEB128().toLong() else 0
         )
     }
 }

@@ -3,6 +3,7 @@ package io.appmetrica.analytics.gradle.common.ndk.dwarf.info.attribute.processor
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.ReferenceBytesConverter
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.DWAttribute
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.DWForm
+import io.appmetrica.analytics.gradle.common.ndk.dwarf.abbrev.isAddressClass
 import io.appmetrica.analytics.gradle.common.ndk.dwarf.info.CompilationUnitContext
 
 class CompileUnitAttributeProcessor(
@@ -21,21 +22,21 @@ class CompileUnitAttributeProcessor(
             DWAttribute.STMT_LIST -> stmtList = referenceBytesConverter.asLongValue(value)
             DWAttribute.HIGH_PC -> {
                 highPc = referenceBytesConverter.asLongValue(value)
-                isHighPcAddress = false
+                isHighPcAddress = form.isAddressClass()
             }
             else -> {
             }
         }
     }
 
-    override fun processAttribute(attribute: DWAttribute, value: Long) {
+    override fun processAttribute(attribute: DWAttribute, form: DWForm, value: Long) {
         when (attribute) {
             DWAttribute.LOW_PC -> lowPc = value
             DWAttribute.STMT_LIST -> stmtList = value
             DWAttribute.RANGES -> rangesSecOffset = value
             DWAttribute.HIGH_PC -> {
                 highPc = value
-                isHighPcAddress = true
+                isHighPcAddress = form.isAddressClass()
             }
             else -> {
             }
