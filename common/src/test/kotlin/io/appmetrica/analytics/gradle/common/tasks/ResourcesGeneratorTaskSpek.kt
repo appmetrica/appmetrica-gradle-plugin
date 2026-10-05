@@ -103,14 +103,12 @@ object ResourcesGeneratorTaskSpek : Spek({
             assertThat(content).contains("io.appmetrica.analytics")
         }
 
-        it("handles null versionName and versionCode gracefully") {
+        it("handles unset versionName and versionCode gracefully") {
             val project = ProjectBuilder.builder().build()
             val buildDir = project.layout.buildDirectory.dir("test4").get().asFile.apply { mkdirs() }
             val infoFile = File(buildDir, "info.txt")
 
             val task = project.tasks.create("genRes4", ResourcesGeneratorTask::class.java) {
-                it.versionName.set(null as String?)
-                it.versionCode.set(null as Int?)
                 it.mappingType.set(MappingType.R8)
                 it.splitVersionCodes.set(emptySet())
                 it.offline.set(false)

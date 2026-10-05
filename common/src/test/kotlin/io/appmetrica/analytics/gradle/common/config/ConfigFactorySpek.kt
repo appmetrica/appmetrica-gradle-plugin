@@ -162,9 +162,9 @@ private fun createVariant(
         override val name: String = buildTypeName
         override val appMetricaConfig: AppMetricaPluginConfig
             get() = throw UnsupportedOperationException()
-        override val buildType: Provider<String?> = project.providers.provider { buildTypeName }
-        override val versionName: Provider<String?> = project.providers.provider { "1.0" }
-        override val versionCode: Provider<Int?> = project.providers.provider { 1 }
+        override val buildType: Provider<String> = project.providers.provider { buildTypeName }
+        override val versionName: Provider<String> = project.providers.provider { "1.0" }
+        override val versionCode: Provider<Int> = project.providers.provider { 1 }
         override val splitVersionCodes: Provider<Set<Int>> = project.providers.provider { emptySet() }
         override val applicationId: String = "com.example.app"
         override val mappingType: MappingType = MappingType.PROGUARD

@@ -1,7 +1,7 @@
 # doc https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml
 
 [versions]
-selfGradlePlugins = "2.0.0-beta+122"
+selfGradlePlugins = "2.0.0-beta+124"
 rtm = "2.1.0"
 
 # Core
@@ -15,6 +15,7 @@ androidTools = "27.2.0"
 
 # Testing
 junit = "4.13.2"
+junitPlatform = "1.6.0"
 assertj = "3.26.3"
 mockito = "5.5.0"
 mockitoKotlin = "5.1.0"
@@ -45,6 +46,7 @@ agp8 = { module = "com.android.tools.build:gradle", version.ref = "agp8" }
 
 # Testing
 junit = { module = "junit:junit", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
 assertj = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }

@@ -72,14 +72,14 @@ class Agp8AndroidApplicationVariant(
     override val name: String
         get() = original.name
 
-    override val buildType: Provider<String?>
-        get() = project.provider { original.buildType }
+    override val buildType: Provider<String>
+        get() = project.provider { original.buildType ?: "" }
 
-    override val versionName: Provider<String?>
-        get() = original.outputs.first().versionName
+    override val versionName: Provider<String>
+        get() = original.outputs.first().versionName.map { it.orEmpty() }
 
-    override val versionCode: Provider<Int?>
-        get() = original.outputs.first().versionCode
+    override val versionCode: Provider<Int>
+        get() = original.outputs.first().versionCode.map { it ?: 0 }
 
     override val splitVersionCodes: Provider<Set<Int>>
         get() = project.provider { original.outputs.mapNotNull { it.versionCode.get() }.toSet() }

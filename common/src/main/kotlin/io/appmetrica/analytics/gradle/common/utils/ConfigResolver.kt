@@ -132,7 +132,7 @@ class ConfigResolver<EXTENSION>(
         )
     }
 
-    fun <T> resolveUnique(
+    fun <T : Any> resolveUnique(
         parameterName: String,
         propertyExtractor: KProperty1<EXTENSION, Provider<T>>,
         default: Provider<T>

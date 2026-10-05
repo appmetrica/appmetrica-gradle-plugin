@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.testing.Test
@@ -19,6 +20,7 @@ import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
 import org.gradle.testing.jacoco.plugins.JacocoPlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class GradlePluginModule : Plugin<Project> {
@@ -58,6 +60,7 @@ class GradlePluginModule : Plugin<Project> {
 
             testImplementation(appMetricaGradlePluginLibs.findLibrary("spek-dsl").get())
             testRuntimeOnly(appMetricaGradlePluginLibs.findLibrary("spek-runner").get())
+            testRuntimeOnly(appMetricaGradlePluginLibs.findLibrary("junit-platform-launcher").get())
             testRuntimeOnly(appMetricaGradlePluginLibs.findLibrary("kotlin-reflect").get())
             testImplementation(appMetricaGradlePluginLibs.findLibrary("mockserver").get())
         }
@@ -89,25 +92,41 @@ class GradlePluginModule : Plugin<Project> {
     private fun Project.createEmbedConfiguration() {
         val embed: Configuration by project.configurations.creating
 
+        // Direct artifacts only. Resolving `embed` itself also pulls the runtime
+        // classpath of embedded projects, including gradleApi(). Gradle 9.5+ shades
+        // BouncyCastle multi-release classes (major version 69); packing those into
+        // the plugin jar breaks InstrumentationAnalysisTransform on Gradle <= 8.13.
+        val embeddedArtifacts = project.configurations.resolvable("embeddedArtifacts") {
+            extendsFrom(embed)
+            isTransitive = false
+        }.get()
+
         project.configurations.named("compileOnly") {
             extendsFrom(embed)
         }
 
         project.tasks.named<Jar>("jar") {
-            // embed all root artifacts without dependencies
-            val embeddedDependencies = embed.resolvedConfiguration.firstLevelModuleDependencies
-            embeddedDependencies.forEach { dependency ->
-                rootProject.subprojects {
-                    if (name in dependency.module.id.toString()) {
-                        this@named.dependsOn(tasks.named<Jar>("jar"))
+            dependsOn(embeddedArtifacts)
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+            from({
+                embeddedArtifacts.map { artifact ->
+                    if (artifact.isDirectory) {
+                        artifact
+                    } else {
+                        // Signed deps (BouncyCastle, JGit, …) leave META-INF/*.SF|*.RSA in the
+                        // fat jar; after merge digests no longer match and Groovy script
+                        // compilation fails with SecurityException.
+                        zipTree(artifact.canonicalFile).matching {
+                            exclude(
+                                "META-INF/*.SF",
+                                "META-INF/*.DSA",
+                                "META-INF/*.RSA",
+                                "META-INF/*.EC",
+                            )
+                        }
                     }
                 }
-            }
-            from(
-                embeddedDependencies.map { dependency ->
-                    dependency.moduleArtifacts.map { zipTree(it.file.canonicalFile) }
-                }
-            )
+            })
         }
     }
 
@@ -140,9 +159,9 @@ class GradlePluginModule : Plugin<Project> {
 
     private fun Project.configureKotlinVersion() {
         tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_11.toString()
-                freeCompilerArgs += "-Xskip-metadata-version-check"
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_11)
+                freeCompilerArgs.add("-Xskip-metadata-version-check")
             }
         }
     }

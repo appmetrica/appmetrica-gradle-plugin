@@ -28,10 +28,10 @@ import java.util.UUID
 abstract class ResourcesGeneratorTask : DefaultTask() {
 
     @get:Input
-    abstract val versionName: Property<String?>
+    abstract val versionName: Property<String>
 
     @get:Input
-    abstract val versionCode: Property<Int?>
+    abstract val versionCode: Property<Int>
 
     @get:Input
     abstract val mappingType: Property<MappingType>

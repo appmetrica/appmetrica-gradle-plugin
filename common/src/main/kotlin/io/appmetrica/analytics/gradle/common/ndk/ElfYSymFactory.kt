@@ -137,7 +137,7 @@ class ElfYSymFactory : YSymFactory {
 
         private fun ByteArray.toHexString() = joinToString("") { it.toHexString(2) }
 
-        private fun Byte.toHexString(size: Int = 0) = toUByte().toString(HEX).padStart(size, '0').toUpperCase()
+        private fun Byte.toHexString(size: Int = 0) = toUByte().toString(HEX).padStart(size, '0').uppercase()
 
 //      https://github.com/google/breakpad/blob/78f7ae495bc147e97a58e8158072fd35fdd99419/src/common/linux/file_id.cc#L178-L193
         @SuppressWarnings("MagicNumber")

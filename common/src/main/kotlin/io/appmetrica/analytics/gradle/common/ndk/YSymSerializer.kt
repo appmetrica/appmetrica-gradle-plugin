@@ -8,7 +8,7 @@ object YSymSerializer {
 
     fun toString(sym: YSym): String {
         return StringBuilder()
-            .appendln("Object file")
+            .appendLine("Object file")
             .appendlnHeader(sym)
             .appendlnDwarf(sym.compileUnits)
             .appendlnSymbols(sym.elfSymbols)
@@ -21,8 +21,8 @@ object YSymSerializer {
 
 private fun StringBuilder.appendlnHeader(sym: YSym) = apply {
     sym.run {
-        appendln("UUID:$identifier")
-        appendln("Architecture:$architecture")
+        appendLine("UUID:$identifier")
+        appendLine("Architecture:$architecture")
 //        Magic
 //        Cputype
 //        Cpusubtype
@@ -32,61 +32,61 @@ private fun StringBuilder.appendlnHeader(sym: YSym) = apply {
 }
 
 private fun StringBuilder.appendlnDwarf(compileUnits: List<YSym.CompileUnit>) = apply {
-    appendln("DWARF")
+    appendLine("DWARF")
     compileUnits.forEach { appendlnCompileUnit(it) }
-    appendln("DWARF end")
+    appendLine("DWARF end")
 }
 
 private fun StringBuilder.appendlnCompileUnit(compileUnit: YSym.CompileUnit) = apply {
     compileUnit.run {
-        appendln("Compile unit:$name")
+        appendLine("Compile unit:$name")
         appendlnRanges(ranges)
         appendlnFiles(files)
         appendlnLines(lines)
         appendlnSubPrograms(subPrograms)
-        appendln("Compile unit end")
+        appendLine("Compile unit end")
     }
 }
 
 private fun StringBuilder.appendlnFiles(files: List<String>) = apply {
-    appendln("File names")
+    appendLine("File names")
     files.forEachIndexed { index, file ->
         if (index != 0) {
             appendlnFile(index, file)
         }
     }
-    appendln("File names end")
+    appendLine("File names end")
 }
 
 private fun StringBuilder.appendlnFile(index: Int, file: String) = apply {
-    appendln("$index,$file")
+    appendLine("$index,$file")
 }
 
 private fun StringBuilder.appendlnLines(lines: List<YSym.Line>) = apply {
-    appendln("Line table")
+    appendLine("Line table")
     lines.forEach { appendlnLine(it) }
-    appendln("Line table end")
+    appendLine("Line table end")
 }
 
 private fun StringBuilder.appendlnLine(line: YSym.Line) = apply {
     line.run {
-        appendln("${address.toHexString()},$file,$lineNumber,$column,${if (endSequence) "1" else "0"}")
+        appendLine("${address.toHexString()},$file,$lineNumber,$column,${if (endSequence) "1" else "0"}")
     }
 }
 
 private fun StringBuilder.appendlnSubPrograms(subPrograms: List<YSym.SubProgram>) = apply {
-    appendln("Functions")
+    appendLine("Functions")
     subPrograms.forEach {
         if (it.ranges.isNotEmpty()) {
             appendlnSubProgram(it)
         }
     }
-    appendln("Functions end")
+    appendLine("Functions end")
 }
 
 private fun StringBuilder.appendlnSubProgram(subProgram: YSym.SubProgram) = apply {
     subProgram.run {
-        appendln("Subprogram:${name.getSymbolName() ?: ""}")
+        appendLine("Subprogram:${name.getSymbolName() ?: ""}")
         appendlnRanges(ranges)
         appendlnInlines(inlines)
     }
@@ -98,8 +98,8 @@ private fun StringBuilder.appendlnInlines(inlines: List<YSym.Inline>) = apply {
 
 private fun StringBuilder.appendlnInline(inline: YSym.Inline) = apply {
     inline.run {
-        appendln("Inline:${name.getSymbolName() ?: ""}")
-        appendln("Depth:$depth")
+        appendLine("Inline:${name.getSymbolName() ?: ""}")
+        appendLine("Depth:$depth")
         appendlnCaller(caller)
         appendlnRanges(ranges)
     }
@@ -107,31 +107,31 @@ private fun StringBuilder.appendlnInline(inline: YSym.Inline) = apply {
 
 private fun StringBuilder.appendlnCaller(caller: YSym.Inline.Caller) = apply {
     caller.run {
-        appendln("Caller:$file,$line,$column")
+        appendLine("Caller:$file,$line,$column")
     }
 }
 
 private fun StringBuilder.appendlnRanges(ranges: List<Pair<Long, Long>>) = apply {
-    appendln("Ranges:${ranges.size}")
+    appendLine("Ranges:${ranges.size}")
     ranges.forEach { appendlnRange(it) }
 }
 
 private fun StringBuilder.appendlnRange(range: Pair<Long, Long>) = apply {
     range.run {
-        appendln("${first.toHexString()},${second.toHexString()}")
+        appendLine("${first.toHexString()},${second.toHexString()}")
     }
 }
 
 private fun StringBuilder.appendlnSymbols(symbols: List<ElfSymbol>) = apply {
-    appendln("Symbol table")
+    appendLine("Symbol table")
     symbols.forEach { appendlnSymbol(it) }
-    appendln("Symbol table end")
+    appendLine("Symbol table end")
 }
 
 private fun StringBuilder.appendlnSymbol(symbol: ElfSymbol) = apply {
     symbol.run {
         if (isUndef() == false && isFunctionEntry()) {
-            appendln("${fixedValue.toHexString()},${size.toHexString()},F,$nameString")
+            appendLine("${fixedValue.toHexString()},${size.toHexString()},F,$nameString")
         }
     }
 }

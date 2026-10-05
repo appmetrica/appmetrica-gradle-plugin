@@ -19,11 +19,11 @@ interface AndroidApplicationVariant {
      */
     val appMetricaConfig: AppMetricaPluginConfig
 
-    val buildType: Provider<String?>
+    val buildType: Provider<String>
 
-    val versionName: Provider<String?>
+    val versionName: Provider<String>
 
-    val versionCode: Provider<Int?>
+    val versionCode: Provider<Int>
 
     val splitVersionCodes: Provider<Set<Int>>
 

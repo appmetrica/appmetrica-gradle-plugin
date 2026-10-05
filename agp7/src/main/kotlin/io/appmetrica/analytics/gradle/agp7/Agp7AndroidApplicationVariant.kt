@@ -71,14 +71,14 @@ class Agp7AndroidApplicationVariant(
     override val name: String
         get() = original.name
 
-    override val buildType: Provider<String?>
+    override val buildType: Provider<String>
         get() = project.provider { original.buildType.name }
 
-    override val versionName: Provider<String?>
-        get() = project.provider { original.versionName }
+    override val versionName: Provider<String>
+        get() = project.provider { original.versionName ?: "" }
 
-    override val versionCode: Provider<Int?>
-        get() = project.provider { original.versionCode }
+    override val versionCode: Provider<Int>
+        get() = project.provider { original.versionCode ?: 0 }
 
     override val splitVersionCodes: Provider<Set<Int>>
         get() = project.provider { original.outputs.map { it.versionCode }.toSet() }
