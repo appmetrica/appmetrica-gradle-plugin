@@ -180,7 +180,6 @@
   "integration_test/sample-kts/app/src/main/res/values/strings.xml":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/app/src/main/res/values/strings.xml",
   "integration_test/sample-kts/build.gradle.kts":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/build.gradle.kts",
   "integration_test/sample-kts/gradle.properties":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/gradle.properties",
-  "integration_test/sample-kts/gradle/gradle-daemon-jvm.properties":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/gradle/gradle-daemon-jvm.properties",
   "integration_test/sample-kts/gradle/wrapper/gradle-wrapper.jar":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/gradle/wrapper/gradle-wrapper.jar",
   "integration_test/sample-kts/gradle/wrapper/gradle-wrapper.properties":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/gradle/wrapper/gradle-wrapper.properties",
   "integration_test/sample-kts/gradlew":"mobile/metrika/android/appmetrica-gradle-plugin/integration_test/sample-kts/gradlew",
