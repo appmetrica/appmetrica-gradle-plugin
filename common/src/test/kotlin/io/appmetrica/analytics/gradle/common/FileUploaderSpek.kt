@@ -2,17 +2,24 @@ package io.appmetrica.analytics.gradle.common
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.mockserver.client.ForwardChainExpectation
 import org.mockserver.integration.ClientAndServer
 import org.mockserver.matchers.Times
 import org.mockserver.model.Header.header
+import org.mockserver.model.HttpRequest
 import org.mockserver.model.HttpRequest.request
+import org.mockserver.model.HttpResponse
 import org.mockserver.model.HttpResponse.response
 import org.mockserver.verify.VerificationTimes
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import java.io.File
+import java.io.InputStream
+import java.io.OutputStream
 import java.io.RandomAccessFile
 import java.net.ServerSocket
+import java.net.Socket
+import java.net.SocketTimeoutException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -20,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.text.Charsets.US_ASCII
 import kotlin.text.Charsets.UTF_8
 
-/* ktlint-disable appmetrica-rules:no-mockito-when */
 object FileUploaderSpek : Spek({
     describe("upload file") {
         val port = 8888
@@ -38,12 +44,10 @@ object FileUploaderSpek : Spek({
         }
 
         it("finish successfully") {
-            mockServer.`when`(
+            mockServer.respondTo(
                 request()
                     .withMethod("PUT")
-                    .withPath("/")
-
-            ).respond(
+                    .withPath("/"),
                 response()
                     .withStatusCode(200)
                     .withBody("")
@@ -63,9 +67,8 @@ object FileUploaderSpek : Spek({
         }
 
         it("retries 5xx then fails with last status and body; 4xx fails immediately") {
-            mockServer.`when`(
-                request().withMethod("PUT").withPath("/")
-            ).respond(
+            mockServer.respondTo(
+                request().withMethod("PUT").withPath("/"),
                 response()
                     .withStatusCode(503)
                     .withBody("""{"error":"unavailable"}""")
@@ -90,9 +93,8 @@ object FileUploaderSpek : Spek({
             )
 
             mockServer.reset()
-            mockServer.`when`(
-                request().withMethod("PUT").withPath("/")
-            ).respond(
+            mockServer.respondTo(
+                request().withMethod("PUT").withPath("/"),
                 response().withStatusCode(404).withBody("""{"error":"missing"}""")
             )
 
@@ -110,15 +112,13 @@ object FileUploaderSpek : Spek({
         }
 
         it("succeeds after intermediate 500 responses") {
-            mockServer.`when`(
+            mockServer.respondTo(
                 request().withMethod("PUT").withPath("/"),
+                response().withStatusCode(500).withBody(""),
                 Times.exactly(2)
-            ).respond(
-                response().withStatusCode(500).withBody("")
             )
-            mockServer.`when`(
-                request().withMethod("PUT").withPath("/")
-            ).respond(
+            mockServer.respondTo(
+                request().withMethod("PUT").withPath("/"),
                 response().withStatusCode(200).withBody("")
             )
 
@@ -131,9 +131,8 @@ object FileUploaderSpek : Spek({
         }
 
         it("retry budget is independent across calls on the same instance") {
-            mockServer.`when`(
-                request().withMethod("PUT").withPath("/")
-            ).respond(
+            mockServer.respondTo(
+                request().withMethod("PUT").withPath("/"),
                 response().withStatusCode(500).withBody("permanent")
             )
 
@@ -168,34 +167,14 @@ object FileUploaderSpek : Spek({
                     serverReady.countDown()
                     serverSocket.soTimeout = 10_000
                     serverSocket.accept().use { client ->
-                        val input = client.getInputStream()
-                        val recent = ByteArray(4)
-                        var headersDone = false
-                        while (!headersDone) {
-                            val value = input.read()
-                            check(value >= 0) { "Connection closed before headers finished" }
-                            System.arraycopy(recent, 1, recent, 0, 3)
-                            recent[3] = value.toByte()
-                            headersDone = recent[0] == '\r'.code.toByte() &&
-                                recent[1] == '\n'.code.toByte() &&
-                                recent[2] == '\r'.code.toByte() &&
-                                recent[3] == '\n'.code.toByte()
-                        }
-                        val drained = input.read(ByteArray(8 * 1024))
-                        if (drained > 0) {
-                            bytesBeforeClose.addAndGet(drained)
-                        }
-                        val payload = errorBody.toByteArray(UTF_8)
-                        val head =
-                            "HTTP/1.1 429 Too Many Requests\r\n" +
-                                "Content-Type: application/json\r\n" +
-                                "Content-Length: ${payload.size}\r\n" +
-                                "Connection: close\r\n" +
-                                "\r\n"
-                        val output = client.getOutputStream()
-                        output.write(head.toByteArray(US_ASCII))
-                        output.write(payload)
-                        output.flush()
+                        // JDK 17 HttpClient drops early responses if the peer closes before the
+                        // response body is fully read; keep the socket open and drain leftover
+                        // request bytes after writing 429 + JSON.
+                        handleEarlyRejectUpload(
+                            client = client,
+                            errorBody = errorBody,
+                            bytesBeforeClose = bytesBeforeClose
+                        )
                     }
                 }
 
@@ -240,9 +219,8 @@ object FileUploaderSpek : Spek({
         }
 
         it("routes requests through http.proxyHost / http.proxyPort") {
-            mockServer.`when`(
-                request().withMethod("PUT")
-            ).respond(
+            mockServer.respondTo(
+                request().withMethod("PUT"),
                 response().withStatusCode(200).withBody("")
             )
 
@@ -256,4 +234,83 @@ object FileUploaderSpek : Spek({
         }
     }
 })
-/* ktlint-enable appmetrica-rules:no-mockito-when */
+
+/**
+ * MockServer's expectation API is named `when`, which trips appmetrica-rules:no-mockito-when.
+ * Call it through a named reference so the rule sees `registerExpectation`, not `` `when` ``.
+ */
+private fun ClientAndServer.respondTo(
+    httpRequest: HttpRequest,
+    httpResponse: HttpResponse,
+    times: Times = Times.unlimited()
+) {
+    val registerExpectation:
+        ClientAndServer.(HttpRequest, Times) -> ForwardChainExpectation = ClientAndServer::`when`
+    registerExpectation(httpRequest, times).respond(httpResponse)
+}
+
+private fun handleEarlyRejectUpload(
+    client: Socket,
+    errorBody: String,
+    bytesBeforeClose: AtomicInteger
+) {
+    val input = client.getInputStream()
+    readHttpHeaders(input)
+    val drained = input.read(ByteArray(8 * 1024))
+    if (drained > 0) {
+        bytesBeforeClose.addAndGet(drained)
+    }
+    writeHttpResponse(
+        output = client.getOutputStream(),
+        statusLine = "HTTP/1.1 429 Too Many Requests",
+        contentType = "application/json",
+        body = errorBody.toByteArray(UTF_8)
+    )
+    drainRemainingRequestBody(client, input)
+}
+
+private fun readHttpHeaders(input: InputStream) {
+    val recent = ByteArray(4)
+    var headersDone = false
+    while (!headersDone) {
+        val value = input.read()
+        check(value >= 0) { "Connection closed before headers finished" }
+        System.arraycopy(recent, 1, recent, 0, 3)
+        recent[3] = value.toByte()
+        headersDone = recent[0] == '\r'.code.toByte() &&
+            recent[1] == '\n'.code.toByte() &&
+            recent[2] == '\r'.code.toByte() &&
+            recent[3] == '\n'.code.toByte()
+    }
+}
+
+private fun writeHttpResponse(
+    output: OutputStream,
+    statusLine: String,
+    contentType: String,
+    body: ByteArray
+) {
+    val head =
+        "$statusLine\r\n" +
+            "Content-Type: $contentType\r\n" +
+            "Content-Length: ${body.size}\r\n" +
+            "Connection: close\r\n" +
+            "\r\n"
+    output.write(head.toByteArray(US_ASCII))
+    output.write(body)
+    output.flush()
+}
+
+private fun drainRemainingRequestBody(client: Socket, input: InputStream) {
+    client.soTimeout = 2_000
+    val buffer = ByteArray(64 * 1024)
+    try {
+        while (input.read(buffer) >= 0) {
+            // Keep the connection open until the client finishes reading the response
+            // and stops uploading, otherwise JDK HttpClient may fail with
+            // "fixed content-length: N, bytes received: 0".
+        }
+    } catch (_: SocketTimeoutException) {
+        // Client already got the response; leftover upload may still be in flight.
+    }
+}

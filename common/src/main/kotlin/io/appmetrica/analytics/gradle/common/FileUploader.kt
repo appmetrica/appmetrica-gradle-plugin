@@ -1,5 +1,6 @@
 package io.appmetrica.analytics.gradle.common
 
+import io.appmetrica.analytics.gradle.common.tls.GradlePluginSslContextFactory
 import io.appmetrica.analytics.gradle.common.utils.Log
 import java.io.File
 import java.net.ProxySelector
@@ -17,6 +18,7 @@ class FileUploader(
     fun uploadFile(zippedFile: File) {
         val httpClientBuilder = HttpClient.newBuilder()
             .proxy(ProxySelector.getDefault())
+            .sslContext(GradlePluginSslContextFactory.sslContext())
         HttpSystemTimeouts.connectTimeout()?.let { httpClientBuilder.connectTimeout(it) }
 
         val request = HttpRequest.newBuilder(URI.create(url))
