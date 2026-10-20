@@ -5,9 +5,8 @@ An example of integration is described on [the documentation page](https://appme
 
 ### Requirements
 
-- Android Gradle Plugin 7.2.0 or higher
-- Gradle 7.4 or higher
-- Kotlin 1.6.21 or higher
+- Android Gradle Plugin from `7.2.0` to `9.4.+` (except `8.0.+`)
+- Gradle from `7.4` to `9.8.1`
 
 ### Suggesting improvements
 

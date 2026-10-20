@@ -161,7 +161,6 @@ class GradlePluginModule : Plugin<Project> {
         tasks.withType<KotlinCompile> {
             compilerOptions {
                 jvmTarget.set(JvmTarget.JVM_11)
-                freeCompilerArgs.add("-Xskip-metadata-version-check")
             }
         }
     }

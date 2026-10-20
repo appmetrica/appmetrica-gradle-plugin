@@ -20,6 +20,44 @@ parser.add_argument("--agp_version", nargs="+")
 
 args = parser.parse_args()
 
+# What to verify for each sample after assemble.
+SAMPLE_CHECKS = {
+    "sample-7.4": {
+        "check_build_log": True,
+        "check_mapping_files_to_upload": True,
+        "check_symbol_files_to_upload": True,
+    },
+    "sample-agp9": {
+        "check_build_log": True,
+        "check_mapping_files_to_upload": True,
+        "check_symbol_files_to_upload": True,
+        "check_value_source": True,
+    },
+}
+
+RELEASE_BUILD_TYPE = "firstOneSecondOneRelease"
+DEBUG_CASES = {
+    "firstOneSecondOneDebug": {
+        "expect_success": False,
+        "expected_log_messages": [
+            "Failed to get mapping file. Make sure that obfuscation is enabled"
+            " or disable the loading of mappings in the plugin setting."
+            " If this does not help, then refer to the documentation.",
+        ],
+    },
+    "firstTwoSecondTwoDebug": {
+        "expect_success": True,
+        "expected_log_messages": [],
+    },
+}
+VALUE_SOURCE = {
+    "sample-agp9": {
+        "parameter_name": "postApiKey",
+        "expected_value": "agp9-release-key",
+    },
+}
+
+
 def format_args(args={}):
     result = []
     for arg in args:
@@ -186,26 +224,7 @@ def check_mapping_files_to_upload(zip_file_name, mapping_file_name):
         raise Exception("Mapping files should be the same")
 
 
-def testRelease(temp_sample_path, version_args, wrapper_version, agp_version):
-    build_type = "firstOneSecondOneRelease"
-    try:
-        assemble_and_upload_mappings(
-            cwd=temp_sample_path,
-            build_type=build_type.capitalize(),
-            args=version_args,
-        )
-        check_mapping_files_to_upload(
-            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
-            mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
-        )
-        check_symbol_files_to_upload(
-            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/symbols.zip",
-        )
-    except Exception as error:
-        errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
-
-
-def assert_value_source(output, parameter_name, expected_value):
+def check_value_source(output, parameter_name, expected_value):
     print(f"[test.py] Asserting value source for {parameter_name}: expected `{expected_value}`", flush=True)
     expected_line = f"Using unique value `{expected_value}` for {parameter_name}"
     if expected_line not in output:
@@ -216,27 +235,6 @@ def assert_value_source(output, parameter_name, expected_value):
         )
 
 
-def testKtsRelease(temp_sample_path, version_args, wrapper_version, agp_version):
-    build_type = "release"
-    try:
-        output = assemble_and_upload_mappings(
-            cwd=temp_sample_path,
-            build_type=build_type.capitalize(),
-            args=version_args,
-        )
-        check_mapping_files_to_upload(
-            zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
-            mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
-        )
-        assert_value_source(
-            output=output,
-            parameter_name="postApiKey",
-            expected_value="kts-release-key",
-        )
-    except Exception as error:
-        errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
-
-
 def check_build_log(output, expected_messages):
     for message in expected_messages:
         print(f"[test.py] Checking log for message: {message}", flush=True)
@@ -244,22 +242,36 @@ def check_build_log(output, expected_messages):
             raise Exception(f"Expected log message not found: {message}")
 
 
-def testDebug(temp_sample_path, version_args, wrapper_version, agp_version):
-    testcases = {
-        "firstOneSecondOneDebug": {
-            "expect_success": False,
-            "expected_log_messages": [
-                "Failed to get mapping file. Make sure that obfuscation is enabled"
-                " or disable the loading of mappings in the plugin setting."
-                " If this does not help, then refer to the documentation.",
-            ],
-        },
-        "firstTwoSecondTwoDebug": {
-            "expect_success": True,
-            "expected_log_messages": [],
-        },
-    }
-    for build_type, config in testcases.items():
+def testRelease(temp_sample_path, version_args, wrapper_version, agp_version, sample_name, checks):
+    build_type = RELEASE_BUILD_TYPE
+    try:
+        output = assemble_and_upload_mappings(
+            cwd=temp_sample_path,
+            build_type=build_type.capitalize(),
+            args=version_args,
+        )
+        if checks.get("check_mapping_files_to_upload"):
+            check_mapping_files_to_upload(
+                zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/mapping.zip",
+                mapping_file_name=f"{temp_sample_path}/app/build/outputs/mapping/{build_type}/mapping.txt"
+            )
+        if checks.get("check_symbol_files_to_upload"):
+            check_symbol_files_to_upload(
+                zip_file_name=f"{temp_sample_path}/app/build/appmetrica/{build_type}/result/symbols.zip",
+            )
+        if checks.get("check_value_source"):
+            value_source = VALUE_SOURCE[sample_name]
+            check_value_source(
+                output=output,
+                parameter_name=value_source["parameter_name"],
+                expected_value=value_source["expected_value"],
+            )
+    except Exception as error:
+        errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}: {str(error)}")
+
+
+def testDebug(temp_sample_path, version_args, wrapper_version, agp_version, checks):
+    for build_type, config in DEBUG_CASES.items():
         try:
             output = assemble_and_upload_mappings(
                 cwd=temp_sample_path,
@@ -267,9 +279,13 @@ def testDebug(temp_sample_path, version_args, wrapper_version, agp_version):
                 args=version_args,
                 expect_success=config["expect_success"],
             )
-            check_build_log(output, config["expected_log_messages"])
+            if checks.get("check_build_log"):
+                check_build_log(output, config["expected_log_messages"])
         except Exception as error:
-            errors.append(f"wrapper_version={wrapper_version}, agp_version={agp_version}, build_type={build_type}, expect_success={config['expect_success']}: {str(error)}")
+            errors.append(
+                f"wrapper_version={wrapper_version}, agp_version={agp_version}, "
+                f"build_type={build_type}, expect_success={config['expect_success']}: {str(error)}"
+            )
 
 
 def test():
@@ -282,6 +298,13 @@ def test():
     wrapper_version = args.gradle_wrapper_version
     agp_versions = args.agp_version
     sample_path = args.sample_path
+    sample_name = os.path.basename(os.path.normpath(sample_path))
+    if sample_name not in SAMPLE_CHECKS:
+        raise Exception(
+            f"Unknown sample '{sample_name}'. Known samples: {sorted(SAMPLE_CHECKS.keys())}"
+        )
+    checks = SAMPLE_CHECKS[sample_name]
+
     for agp_version in agp_versions:
         temp_sample_path = tempfile.TemporaryDirectory().name
         shutil.copytree(sample_path, temp_sample_path)
@@ -300,11 +323,8 @@ def test():
         if not gradle_updated:
             continue
 
-        if os.path.basename(os.path.normpath(sample_path)) == "sample-kts":
-            testKtsRelease(temp_sample_path, version_args, wrapper_version, agp_version)
-        else:
-            testRelease(temp_sample_path, version_args, wrapper_version, agp_version)
-            testDebug(temp_sample_path, version_args, wrapper_version, agp_version)
+        testRelease(temp_sample_path, version_args, wrapper_version, agp_version, sample_name, checks)
+        testDebug(temp_sample_path, version_args, wrapper_version, agp_version, checks)
 
     if len(errors) != 0:
         print(f"Found {str(len(errors))} errors:", file=sys.stderr, flush=True)

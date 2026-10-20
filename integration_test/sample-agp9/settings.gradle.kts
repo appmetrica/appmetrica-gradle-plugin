@@ -4,6 +4,6 @@ if (file("internal.settings.gradle.kts").exists()) {
     apply(from = "public.settings.gradle.kts")
 }
 
-rootProject.name = "sample-kts"
+rootProject.name = "sample-agp9"
 
 include(":app")

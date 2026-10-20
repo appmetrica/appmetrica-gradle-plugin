@@ -1,4 +1,4 @@
-package io.appmetrica.analytics.gradle.plugin.sample.kts
+package io.appmetrica.analytics.gradle.plugin.sample.agp9
 
 import android.app.Activity
 
